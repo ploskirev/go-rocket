@@ -1,0 +1,15 @@
+type: object
+required:
+  - order_uuid
+  - total_price
+properties:
+  order_uuid:
+    type: string
+    description: UUID заказа
+    example: nj8hf53mp9y
+  total_price:
+    type: number
+    format: float
+    description: стоимость заказа
+    example: 123.45
+  
