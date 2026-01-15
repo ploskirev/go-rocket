@@ -69,7 +69,7 @@ func NewOrderHandler(ic inventory_v1.InventoryServiceClient, pc payment_v1.Payme
 }
 
 func (h *OrderHandler) CreateOrder(ctx context.Context, req *order_v1.CreateOrderRequest) (order_v1.CreateOrderRes, error) {
-	fmt.Println("USER UUID: ", req.UserUUID, " , PART UUIDS: ", req.PartUuids)
+	// fmt.Println("USER UUID: ", req.UserUUID, " , PART UUIDS: ", req.PartUuids)
 
 	res, err := h.ic.ListPart(ctx, &inventory_v1.ListPartsRequest{})
 	if err != nil {
@@ -131,7 +131,7 @@ func (h *OrderHandler) CreateOrder(ctx context.Context, req *order_v1.CreateOrde
 }
 
 func (h *OrderHandler) PayOrder(ctx context.Context, req *order_v1.PayOrderRequest, params order_v1.PayOrderParams) (order_v1.PayOrderRes, error) {
-	fmt.Println("ORDER UUID: ", params.OrderUUID, " , PAYMENT METHOD: ", req.PaymentMethod)
+	// fmt.Println("ORDER UUID: ", params.OrderUUID, " , PAYMENT METHOD: ", req.PaymentMethod)
 
 	h.mu.Lock()
 	defer h.mu.Unlock()
@@ -180,16 +180,16 @@ func (h *OrderHandler) PayOrder(ctx context.Context, req *order_v1.PayOrderReque
 }
 
 func (h *OrderHandler) GetOrder(_ context.Context, params order_v1.GetOrderParams) (order_v1.GetOrderRes, error) {
-	fmt.Println("ORDER UUID: ", params.OrderUUID)
+	// fmt.Println("ORDER UUID: ", params.OrderUUID)
 
 	h.mu.RLock()
 	defer h.mu.RUnlock()
 
 	st := *h.storage
 
-	for _, o := range st {
-		fmt.Println("ORDER UUID2: ", o.OrderUUID)
-	}
+	// for _, o := range st {
+	// 	fmt.Println("ORDER UUID2: ", o.OrderUUID)
+	// }
 
 	order, ok := st[params.OrderUUID]
 	if !ok {
@@ -224,7 +224,7 @@ func (h *OrderHandler) GetOrder(_ context.Context, params order_v1.GetOrderParam
 }
 
 func (h *OrderHandler) CancelOrder(ctx context.Context, params order_v1.CancelOrderParams) (order_v1.CancelOrderRes, error) {
-	fmt.Println("ORDER UUID: ", params.OrderUUID)
+	// fmt.Println("ORDER UUID: ", params.OrderUUID)
 
 	h.mu.Lock()
 	defer h.mu.Unlock()
@@ -301,7 +301,7 @@ func main() {
 
 	orderServer, err := order_v1.NewServer(orderHandler)
 	if err != nil {
-		log.Fatalf("ошибка создания Orders сервера: %v", err)
+		log.Printf("ошибка создания Orders сервера: %v", err)
 	}
 
 	// Инициализируем роутер Chi

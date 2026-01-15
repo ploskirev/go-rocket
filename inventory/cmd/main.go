@@ -12,11 +12,12 @@ import (
 	"syscall"
 	"time"
 
-	inventory_v1 "github.com/ploskirev/go-rocket/shared/pkg/proto/inventory/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/reflection"
 	"google.golang.org/grpc/status"
+
+	inventory_v1 "github.com/ploskirev/go-rocket/shared/pkg/proto/inventory/v1"
 )
 
 const grpcPort = 50051
@@ -75,7 +76,7 @@ func NewInventoryService() *inventoryService {
 }
 
 func (s *inventoryService) GetPart(_ context.Context, req *inventory_v1.GetPartRequest) (*inventory_v1.Part, error) {
-	fmt.Println("UUID: ", req.Uuid)
+	// fmt.Println("UUID: ", req.Uuid)
 	s.mu.RLock()
 	defer s.mu.RUnlock()
 	st := *s.storage
@@ -87,9 +88,10 @@ func (s *inventoryService) GetPart(_ context.Context, req *inventory_v1.GetPartR
 	}
 
 	return &inventory_v1.Part{
-		Uuid:  part.UUID,
-		Name:  part.Name,
-		Price: part.Price,
+		Uuid:        part.UUID,
+		Name:        part.Name,
+		Price:       part.Price,
+		Description: part.description,
 	}, nil
 }
 
@@ -121,7 +123,7 @@ func (s *inventoryService) ListPart(_ context.Context, req *inventory_v1.ListPar
 					break
 				}
 			}
-			if skip == true {
+			if skip {
 				continue
 			}
 
@@ -132,7 +134,7 @@ func (s *inventoryService) ListPart(_ context.Context, req *inventory_v1.ListPar
 					break
 				}
 			}
-			if skip == true {
+			if skip {
 				continue
 			}
 
@@ -143,7 +145,7 @@ func (s *inventoryService) ListPart(_ context.Context, req *inventory_v1.ListPar
 					break
 				}
 			}
-			if skip == true {
+			if skip {
 				continue
 			}
 
@@ -154,7 +156,7 @@ func (s *inventoryService) ListPart(_ context.Context, req *inventory_v1.ListPar
 					break
 				}
 			}
-			if skip == true {
+			if skip {
 				continue
 			}
 
@@ -165,7 +167,7 @@ func (s *inventoryService) ListPart(_ context.Context, req *inventory_v1.ListPar
 					break
 				}
 			}
-			if skip == true {
+			if skip {
 				continue
 			}
 
@@ -174,7 +176,7 @@ func (s *inventoryService) ListPart(_ context.Context, req *inventory_v1.ListPar
 	}
 
 	return &inventory_v1.ListPartsResponse{
-		Parts: parts,
+		Parts: filteredParts,
 	}, nil
 }
 

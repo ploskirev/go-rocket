@@ -10,11 +10,12 @@ import (
 	"syscall"
 
 	"github.com/google/uuid"
-	payment_v1 "github.com/ploskirev/go-rocket/shared/pkg/proto/payment/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/reflection"
 	"google.golang.org/grpc/status"
+
+	payment_v1 "github.com/ploskirev/go-rocket/shared/pkg/proto/payment/v1"
 )
 
 const grpcPort = 50052
@@ -24,7 +25,7 @@ type paymentService struct {
 }
 
 func (s *paymentService) PayOrder(_ context.Context, req *payment_v1.PayOrderRequest) (*payment_v1.PayOrderResponse, error) {
-	fmt.Println("PAY ORDER!")
+	// fmt.Println("PAY ORDER!")
 
 	transactionUUID, err := uuid.NewV6()
 	if err != nil {
