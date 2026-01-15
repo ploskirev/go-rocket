@@ -332,13 +332,13 @@ func (s *Server) handleCreateOrderRequest(args [0]string, argsEscaped bool, w ht
 //
 // Get order info.
 //
-// POST /api/v1/orders/{order_uuid}
+// GET /api/v1/orders/{order_uuid}
 func (s *Server) handleGetOrderRequest(args [1]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
 	statusWriter := &codeRecorder{ResponseWriter: w}
 	w = statusWriter
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("GetOrder"),
-		semconv.HTTPRequestMethodKey.String("POST"),
+		semconv.HTTPRequestMethodKey.String("GET"),
 		semconv.HTTPRouteKey.String("/api/v1/orders/{order_uuid}"),
 	}
 

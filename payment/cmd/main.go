@@ -25,8 +25,6 @@ type paymentService struct {
 }
 
 func (s *paymentService) PayOrder(_ context.Context, req *payment_v1.PayOrderRequest) (*payment_v1.PayOrderResponse, error) {
-	// fmt.Println("PAY ORDER!")
-
 	transactionUUID, err := uuid.NewV6()
 	if err != nil {
 		log.Printf("Ошибка генерации transaction uuid %s", err)

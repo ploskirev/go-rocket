@@ -44,7 +44,7 @@ type Invoker interface {
 	//
 	// Get order info.
 	//
-	// POST /api/v1/orders/{order_uuid}
+	// GET /api/v1/orders/{order_uuid}
 	GetOrder(ctx context.Context, params GetOrderParams) (GetOrderRes, error)
 	// PayOrder invokes PayOrder operation.
 	//
@@ -271,7 +271,7 @@ func (c *Client) sendCreateOrder(ctx context.Context, request *CreateOrderReques
 //
 // Get order info.
 //
-// POST /api/v1/orders/{order_uuid}
+// GET /api/v1/orders/{order_uuid}
 func (c *Client) GetOrder(ctx context.Context, params GetOrderParams) (GetOrderRes, error) {
 	res, err := c.sendGetOrder(ctx, params)
 	return res, err
@@ -280,7 +280,7 @@ func (c *Client) GetOrder(ctx context.Context, params GetOrderParams) (GetOrderR
 func (c *Client) sendGetOrder(ctx context.Context, params GetOrderParams) (res GetOrderRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("GetOrder"),
-		semconv.HTTPRequestMethodKey.String("POST"),
+		semconv.HTTPRequestMethodKey.String("GET"),
 		semconv.HTTPRouteKey.String("/api/v1/orders/{order_uuid}"),
 	}
 
@@ -336,7 +336,7 @@ func (c *Client) sendGetOrder(ctx context.Context, params GetOrderParams) (res G
 	uri.AddPathParts(u, pathParts[:]...)
 
 	stage = "EncodeRequest"
-	r, err := ht.NewRequest(ctx, "POST", u)
+	r, err := ht.NewRequest(ctx, "GET", u)
 	if err != nil {
 		return res, errors.Wrap(err, "create request")
 	}

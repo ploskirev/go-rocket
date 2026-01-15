@@ -69,8 +69,6 @@ func NewOrderHandler(ic inventory_v1.InventoryServiceClient, pc payment_v1.Payme
 }
 
 func (h *OrderHandler) CreateOrder(ctx context.Context, req *order_v1.CreateOrderRequest) (order_v1.CreateOrderRes, error) {
-	// fmt.Println("USER UUID: ", req.UserUUID, " , PART UUIDS: ", req.PartUuids)
-
 	res, err := h.ic.ListPart(ctx, &inventory_v1.ListPartsRequest{})
 	if err != nil {
 		log.Printf("Error get list parts: %s", err)
@@ -131,8 +129,6 @@ func (h *OrderHandler) CreateOrder(ctx context.Context, req *order_v1.CreateOrde
 }
 
 func (h *OrderHandler) PayOrder(ctx context.Context, req *order_v1.PayOrderRequest, params order_v1.PayOrderParams) (order_v1.PayOrderRes, error) {
-	// fmt.Println("ORDER UUID: ", params.OrderUUID, " , PAYMENT METHOD: ", req.PaymentMethod)
-
 	h.mu.Lock()
 	defer h.mu.Unlock()
 
@@ -168,9 +164,15 @@ func (h *OrderHandler) PayOrder(ctx context.Context, req *order_v1.PayOrderReque
 		}, nil
 	}
 
-	order.Status = PAID
-	order.TransactionUUID = &payRes.TransactionUuid
-	order.PaymentMethod = (*string)(&req.PaymentMethod)
+	st[params.OrderUUID] = Order{
+		OrderUUID:       st[params.OrderUUID].OrderUUID,
+		UserUUID:        st[params.OrderUUID].UserUUID,
+		PartUUIDs:       st[params.OrderUUID].PartUUIDs,
+		TotalPrice:      st[params.OrderUUID].TotalPrice,
+		TransactionUUID: &payRes.TransactionUuid,
+		PaymentMethod:   (*string)(&req.PaymentMethod),
+		Status:          PAID,
+	}
 
 	res := &order_v1.PayOrderResponse{
 		TransactionUUID: payRes.TransactionUuid,
@@ -180,16 +182,10 @@ func (h *OrderHandler) PayOrder(ctx context.Context, req *order_v1.PayOrderReque
 }
 
 func (h *OrderHandler) GetOrder(_ context.Context, params order_v1.GetOrderParams) (order_v1.GetOrderRes, error) {
-	// fmt.Println("ORDER UUID: ", params.OrderUUID)
-
 	h.mu.RLock()
 	defer h.mu.RUnlock()
 
 	st := *h.storage
-
-	// for _, o := range st {
-	// 	fmt.Println("ORDER UUID2: ", o.OrderUUID)
-	// }
 
 	order, ok := st[params.OrderUUID]
 	if !ok {
@@ -224,8 +220,6 @@ func (h *OrderHandler) GetOrder(_ context.Context, params order_v1.GetOrderParam
 }
 
 func (h *OrderHandler) CancelOrder(ctx context.Context, params order_v1.CancelOrderParams) (order_v1.CancelOrderRes, error) {
-	// fmt.Println("ORDER UUID: ", params.OrderUUID)
-
 	h.mu.Lock()
 	defer h.mu.Unlock()
 
@@ -249,7 +243,15 @@ func (h *OrderHandler) CancelOrder(ctx context.Context, params order_v1.CancelOr
 	}
 
 	if order.Status == PENDING_PAYMENT {
-		order.Status = CANCELLED
+		st[params.OrderUUID] = Order{
+			OrderUUID:       st[params.OrderUUID].OrderUUID,
+			UserUUID:        st[params.OrderUUID].UserUUID,
+			PartUUIDs:       st[params.OrderUUID].PartUUIDs,
+			TotalPrice:      st[params.OrderUUID].TotalPrice,
+			TransactionUUID: st[params.OrderUUID].TransactionUUID,
+			PaymentMethod:   st[params.OrderUUID].PaymentMethod,
+			Status:          CANCELLED,
+		}
 	}
 
 	res := &order_v1.CancelOrderNoContent{}

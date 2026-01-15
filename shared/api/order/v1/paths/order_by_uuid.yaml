@@ -1,7 +1,7 @@
 parameters:
   - $ref: ../params/order_uuid.yaml
 
-post:
+get:
   summary: Get order info
   operationId: GetOrder
   tags:

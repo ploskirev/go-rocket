@@ -87,12 +87,12 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 				if len(elem) == 0 {
 					switch r.Method {
-					case "POST":
+					case "GET":
 						s.handleGetOrderRequest([1]string{
 							args[0],
 						}, elemIsEscaped, w, r)
 					default:
-						s.notAllowed(w, r, "POST")
+						s.notAllowed(w, r, "GET")
 					}
 
 					return
@@ -282,7 +282,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 
 				if len(elem) == 0 {
 					switch method {
-					case "POST":
+					case "GET":
 						r.name = GetOrderOperation
 						r.summary = "Get order info"
 						r.operationID = "GetOrder"

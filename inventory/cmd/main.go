@@ -76,7 +76,6 @@ func NewInventoryService() *inventoryService {
 }
 
 func (s *inventoryService) GetPart(_ context.Context, req *inventory_v1.GetPartRequest) (*inventory_v1.Part, error) {
-	// fmt.Println("UUID: ", req.Uuid)
 	s.mu.RLock()
 	defer s.mu.RUnlock()
 	st := *s.storage
@@ -99,7 +98,7 @@ func (s *inventoryService) ListPart(_ context.Context, req *inventory_v1.ListPar
 	s.mu.RLock()
 	defer s.mu.RUnlock()
 
-	parts := make([]*inventory_v1.Part, len(*s.storage))
+	parts := make([]*inventory_v1.Part, 0, len(*s.storage))
 
 	for _, p := range *s.storage {
 		parts = append(parts, &inventory_v1.Part{
@@ -109,75 +108,93 @@ func (s *inventoryService) ListPart(_ context.Context, req *inventory_v1.ListPar
 		})
 	}
 
-	filteredParts := make([]*inventory_v1.Part, len(parts))
-	for _, part := range parts {
-		skip := false
-
-		if len(req.Filter.Uuids) > 0 {
-			skip = true
-
-			// by UUID
-			for _, f := range req.Filter.Uuids {
-				if f == part.Uuid {
-					skip = false
-					break
-				}
-			}
-			if skip {
-				continue
-			}
-
-			// by names
-			for _, f := range req.Filter.Names {
-				if f == part.Name {
-					skip = false
-					break
-				}
-			}
-			if skip {
-				continue
-			}
-
-			// by category
-			for _, f := range req.Filter.Categories {
-				if f == part.Category {
-					skip = false
-					break
-				}
-			}
-			if skip {
-				continue
-			}
-
-			// by manufacturer country
-			for _, f := range req.Filter.ManufacturerCountries {
-				if f == part.Manufacturer.Country {
-					skip = false
-					break
-				}
-			}
-			if skip {
-				continue
-			}
-
-			// by manufacturer country
-			for _, f := range req.Filter.Tags {
-				if slices.Contains(part.Tags, f) {
-					skip = false
-					break
-				}
-			}
-			if skip {
-				continue
-			}
-
-			filteredParts = append(filteredParts, part)
-		}
+	if req.Filter != nil {
+		parts = filterParts(parts, req.Filter)
 	}
 
 	return &inventory_v1.ListPartsResponse{
-		Parts: filteredParts,
+		Parts: parts,
 	}, nil
+}
+
+type FiltersMaps struct {
+	byUUIDs                 map[string]struct{}
+	byNames                 map[string]struct{}
+	byCategories            map[inventory_v1.Category]struct{}
+	byManufactoredCountries map[string]struct{}
+	byTagsSlice             []string
+}
+
+func convertFiltersToMaps(filters *inventory_v1.PartsFilter) *FiltersMaps {
+	filterUUIDsMap := make(map[string]struct{}, len(filters.Uuids))
+	for _, f := range filters.Uuids {
+		filterUUIDsMap[f] = struct{}{}
+	}
+	filterNamesMap := make(map[string]struct{}, len(filters.Names))
+	for _, f := range filters.Names {
+		filterNamesMap[f] = struct{}{}
+	}
+	filterCategoriesMap := make(map[inventory_v1.Category]struct{}, len(filters.Categories))
+	for _, f := range filters.Categories {
+		filterCategoriesMap[f] = struct{}{}
+	}
+	filterManufactoredCountriesMap := make(map[string]struct{}, len(filters.ManufacturerCountries))
+	for _, f := range filters.ManufacturerCountries {
+		filterManufactoredCountriesMap[f] = struct{}{}
+	}
+
+	return &FiltersMaps{
+		byUUIDs:                 filterUUIDsMap,
+		byNames:                 filterNamesMap,
+		byCategories:            filterCategoriesMap,
+		byManufactoredCountries: filterManufactoredCountriesMap,
+		byTagsSlice:             filters.Tags,
+	}
+}
+
+func filterParts(parts []*inventory_v1.Part, filters *inventory_v1.PartsFilter) []*inventory_v1.Part {
+	filtersMaps := convertFiltersToMaps(filters)
+	filteredParts := make([]*inventory_v1.Part, 0, len(parts))
+
+	for _, part := range parts {
+		if len(filtersMaps.byUUIDs) > 0 {
+			if _, ok := filtersMaps.byUUIDs[part.Uuid]; !ok {
+				continue
+			}
+		}
+		if len(filtersMaps.byNames) > 0 {
+			if _, ok := filtersMaps.byNames[part.Name]; !ok {
+				continue
+			}
+		}
+		if len(filtersMaps.byCategories) > 0 {
+			if _, ok := filtersMaps.byCategories[part.Category]; !ok {
+				continue
+			}
+		}
+		if len(filtersMaps.byManufactoredCountries) > 0 {
+			if _, ok := filtersMaps.byManufactoredCountries[part.Manufacturer.Country]; !ok {
+				continue
+			}
+		}
+		if len(filtersMaps.byTagsSlice) > 0 {
+			skip := true
+			for _, t := range part.Tags {
+				if slices.Contains(filtersMaps.byTagsSlice, t) {
+					skip = false
+					break
+				}
+			}
+
+			if skip {
+				continue
+			}
+		}
+
+		filteredParts = append(filteredParts, part)
+	}
+
+	return filteredParts
 }
 
 func main() {
@@ -200,6 +217,11 @@ func main() {
 		UUID:  "q1w2e3r4t5",
 		Name:  "Test detail",
 		Price: 535.7,
+	}
+	store["z9x8c7v6b5"] = Part{
+		UUID:  "z9x8c7v6b5",
+		Name:  "Second detail",
+		Price: 177.5,
 	}
 
 	inventory_v1.RegisterInventoryServiceServer(s, service)
