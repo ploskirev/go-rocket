@@ -1,0 +1,15 @@
+type: object
+required:
+  - user_uuid
+  - part_uuids
+properties:
+  user_uuid:
+    type: string
+    description: UUID пользователя
+    example: w3edT5R89c
+  part_uuids:
+    type: array
+    items:
+      type: string
+      description: UUID детали
+      example: nj8hf53mp9y

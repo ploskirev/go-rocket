@@ -1,0 +1,33 @@
+# type: integer
+# description: Cпособ оплаты
+# enum: [0, 1, 2, 3, 4]
+# x-ogen-enum-names: [UNKNOWN, CARD, SBP, CREDIT_CARD, INVESTOR_MONEY]
+# x-ogen-enum-names: ["UNKNOWN", "CARD", "SBP", "CREDIT_CARD", "INVESTOR_MONEY"]
+# x-go-name:
+#   0: UNKNOWN
+#   1: CARD
+#   2: SBP
+#   3: CREDIT_CARD
+#   4: INVESTOR_MONEY
+# description: |
+#   0 - UNKNOWN
+#   1 - CARD
+#   2 - SBP
+#   3 - CREDIT_CARD
+#   4 - INVESTOR_MONEY
+# example: CARD
+type: string
+enum: [PAYMENT_METHOD_UNKNOWN, PAYMENT_METHOD_CARD, PAYMENT_METHOD_SBP, PAYMENT_METHOD_CREDIT_CARD, PAYMENT_METHOD_INVESTOR_MONEY]
+# type: number
+# enum:
+#   - title: UNKNOWN
+#     const: 0
+#     # description: Wrong
+#   - title: CARD
+#     const: 1
+#   - title: SBP
+#     const: 2
+#   - title: CREDIT_CARD
+#     const: 3
+#   - title: INVESTOR_MONEY
+#     const: 4
