@@ -270,7 +270,7 @@ tasks:
         echo "🧪 Тестирование API микросервисов через gRPC и REST"
         
         echo "📦 Тест 1: Получение списка деталей из Inventory"
-        PARTS_RESPONSE=$({{.GRPCURL}} -plaintext -d '{"filter":{}}' localhost:50051 inventory.v1.InventoryService/ListPart)
+        PARTS_RESPONSE=$({{.GRPCURL}} -plaintext -d '{"filter":{}}' localhost:50051 inventory.v1.InventoryService/ListParts)
         
         if [[ -z "$PARTS_RESPONSE" || "$PARTS_RESPONSE" == *"error"* ]]; then
           echo "❌ Не удалось получить список деталей."

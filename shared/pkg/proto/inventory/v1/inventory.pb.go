@@ -726,10 +726,10 @@ const file_inventory_v1_inventory_proto_rawDesc = "" +
 	"\x06ENGINE\x10\x01\x12\b\n" +
 	"\x04FUEL\x10\x02\x12\f\n" +
 	"\bPORTHOLE\x10\x03\x12\b\n" +
-	"\x04WING\x10\x042\x9c\x01\n" +
+	"\x04WING\x10\x042\x9d\x01\n" +
 	"\x10InventoryService\x12;\n" +
-	"\aGetPart\x12\x1c.inventory.v1.GetPartRequest\x1a\x12.inventory.v1.Part\x12K\n" +
-	"\bListPart\x12\x1e.inventory.v1.ListPartsRequest\x1a\x1f.inventory.v1.ListPartsResponseBKZIgithub.com/ploskirev/go-rocket/shared/pkg/proto/inventory/v1;inventory_v1b\x06proto3"
+	"\aGetPart\x12\x1c.inventory.v1.GetPartRequest\x1a\x12.inventory.v1.Part\x12L\n" +
+	"\tListParts\x12\x1e.inventory.v1.ListPartsRequest\x1a\x1f.inventory.v1.ListPartsResponseBKZIgithub.com/ploskirev/go-rocket/shared/pkg/proto/inventory/v1;inventory_v1b\x06proto3"
 
 var (
 	file_inventory_v1_inventory_proto_rawDescOnce sync.Once
@@ -770,9 +770,9 @@ var file_inventory_v1_inventory_proto_depIdxs = []int32{
 	0,  // 8: inventory.v1.PartsFilter.categories:type_name -> inventory.v1.Category
 	7,  // 9: inventory.v1.Part.MetadataEntry.value:type_name -> inventory.v1.Value
 	1,  // 10: inventory.v1.InventoryService.GetPart:input_type -> inventory.v1.GetPartRequest
-	2,  // 11: inventory.v1.InventoryService.ListPart:input_type -> inventory.v1.ListPartsRequest
+	2,  // 11: inventory.v1.InventoryService.ListParts:input_type -> inventory.v1.ListPartsRequest
 	4,  // 12: inventory.v1.InventoryService.GetPart:output_type -> inventory.v1.Part
-	3,  // 13: inventory.v1.InventoryService.ListPart:output_type -> inventory.v1.ListPartsResponse
+	3,  // 13: inventory.v1.InventoryService.ListParts:output_type -> inventory.v1.ListPartsResponse
 	12, // [12:14] is the sub-list for method output_type
 	10, // [10:12] is the sub-list for method input_type
 	10, // [10:10] is the sub-list for extension type_name

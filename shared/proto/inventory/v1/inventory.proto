@@ -10,7 +10,7 @@ option go_package = "github.com/ploskirev/go-rocket/shared/pkg/proto/inventory/v
 
 service InventoryService {
   rpc GetPart(GetPartRequest) returns (Part);
-  rpc ListPart(ListPartsRequest) returns (ListPartsResponse);
+  rpc ListParts(ListPartsRequest) returns (ListPartsResponse);
 }
 
 message GetPartRequest {

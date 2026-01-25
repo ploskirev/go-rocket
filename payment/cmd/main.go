@@ -1,7 +1,6 @@
 package main
 
 import (
-	"context"
 	"fmt"
 	"log"
 	"net"
@@ -9,34 +8,15 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/google/uuid"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/reflection"
-	"google.golang.org/grpc/status"
 
+	paymentApi "github.com/ploskirev/go-rocket/payment/internal/api/payment/v1"
+	paymentService "github.com/ploskirev/go-rocket/payment/internal/service/payment"
 	payment_v1 "github.com/ploskirev/go-rocket/shared/pkg/proto/payment/v1"
 )
 
 const grpcPort = 50052
-
-type paymentService struct {
-	payment_v1.UnimplementedPaymentServiceServer
-}
-
-func (s *paymentService) PayOrder(_ context.Context, req *payment_v1.PayOrderRequest) (*payment_v1.PayOrderResponse, error) {
-	transactionUUID, err := uuid.NewV6()
-	if err != nil {
-		log.Printf("Ошибка генерации transaction uuid %s", err)
-		return nil, status.Errorf(codes.NotFound, "Ошибка генерации transaction uuid %s", err)
-	}
-
-	log.Printf("Оплата прошла успешно, transaction_uuid: %s", transactionUUID)
-
-	return &payment_v1.PayOrderResponse{
-		TransactionUuid: transactionUUID.String(),
-	}, nil
-}
 
 func main() {
 	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", grpcPort))
@@ -51,9 +31,10 @@ func main() {
 
 	s := grpc.NewServer()
 
-	service := &paymentService{}
+	payService := paymentService.NewPaymentService()
+	payApi := paymentApi.NewApi(payService)
 
-	payment_v1.RegisterPaymentServiceServer(s, service)
+	payment_v1.RegisterPaymentServiceServer(s, payApi)
 
 	reflection.Register(s)
 
