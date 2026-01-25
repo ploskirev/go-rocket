@@ -5,6 +5,7 @@ import (
 	"log"
 
 	"github.com/google/uuid"
+
 	"github.com/ploskirev/go-rocket/order/internal/model"
 )
 

@@ -1,7 +1,6 @@
 package payment
 
-type paymentService struct {
-}
+type paymentService struct{}
 
 func NewPaymentService() *paymentService {
 	return &paymentService{}

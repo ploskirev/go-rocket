@@ -1,11 +1,8 @@
 package converter
 
 import (
-	"fmt"
-
 	"github.com/ploskirev/go-rocket/inventory/internal/model"
 	repoModel "github.com/ploskirev/go-rocket/inventory/internal/repository/model"
-	inventory_v1 "github.com/ploskirev/go-rocket/shared/pkg/proto/inventory/v1"
 )
 
 func PartToModel(part *repoModel.Part) *model.Part {
@@ -42,30 +39,30 @@ func PartManufacturerToModel(m *repoModel.Manifacturer) *model.Manufacturer {
 	}
 }
 
-func MetadataToModel(m map[string]inventory_v1.Value) map[string]any {
-	r := make(map[string]any, len(m))
+// func MetadataToModel(m map[string]inventory_v1.Value) map[string]any {
+// 	r := make(map[string]any, len(m))
 
-	for k, v := range m {
-		switch t := v.ValueType.(type) {
-		case *inventory_v1.Value_Int64Value:
-			r[k] = t.Int64Value
+// 	for k, v := range m {
+// 		switch t := v.ValueType.(type) {
+// 		case *inventory_v1.Value_Int64Value:
+// 			r[k] = t.Int64Value
 
-		case *inventory_v1.Value_DoubleValue:
-			r[k] = t.DoubleValue
+// 		case *inventory_v1.Value_DoubleValue:
+// 			r[k] = t.DoubleValue
 
-		case *inventory_v1.Value_StringValue:
-			r[k] = t.StringValue
+// 		case *inventory_v1.Value_StringValue:
+// 			r[k] = t.StringValue
 
-		case *inventory_v1.Value_BoolValue:
-			r[k] = t.BoolValue
+// 		case *inventory_v1.Value_BoolValue:
+// 			r[k] = t.BoolValue
 
-		default:
-			fmt.Println("Unsupported type for metadata")
-		}
-	}
+// 		default:
+// 			log.Println("Unsupported type for metadata")
+// 		}
+// 	}
 
-	return r
-}
+// 	return r
+// }
 
 func FiltersToRepoFilters(f *model.Filters) *repoModel.Filters {
 	categories := make([]repoModel.Category, 0, len(f.Categories))

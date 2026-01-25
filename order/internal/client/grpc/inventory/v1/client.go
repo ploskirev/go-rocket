@@ -3,9 +3,10 @@ package inventoryv1
 import (
 	"log"
 
-	inventory_v1 "github.com/ploskirev/go-rocket/shared/pkg/proto/inventory/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
+
+	inventory_v1 "github.com/ploskirev/go-rocket/shared/pkg/proto/inventory/v1"
 )
 
 const (

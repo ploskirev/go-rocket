@@ -4,10 +4,11 @@ import (
 	"context"
 	"log"
 
-	"github.com/ploskirev/go-rocket/payment/internal/api/payment/v1/converter"
-	payment_v1 "github.com/ploskirev/go-rocket/shared/pkg/proto/payment/v1"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+
+	"github.com/ploskirev/go-rocket/payment/internal/api/payment/v1/converter"
+	payment_v1 "github.com/ploskirev/go-rocket/shared/pkg/proto/payment/v1"
 )
 
 func (a *api) PayOrder(ctx context.Context, req *payment_v1.PayOrderRequest) (*payment_v1.PayOrderResponse, error) {

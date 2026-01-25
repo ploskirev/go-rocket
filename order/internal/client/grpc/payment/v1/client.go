@@ -3,9 +3,10 @@ package paymentv1
 import (
 	"log"
 
-	payment_v1 "github.com/ploskirev/go-rocket/shared/pkg/proto/payment/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
+
+	payment_v1 "github.com/ploskirev/go-rocket/shared/pkg/proto/payment/v1"
 )
 
 const (
@@ -17,7 +18,6 @@ type paymentClient struct {
 }
 
 func NewPaymentClient() (*paymentClient, *grpc.ClientConn, error) {
-
 	paymentConn, err := grpc.NewClient(
 		paymentAddress,
 		grpc.WithTransportCredentials(insecure.NewCredentials()),

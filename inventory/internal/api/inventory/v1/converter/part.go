@@ -1,11 +1,12 @@
 package converter
 
 import (
-	"fmt"
+	"log"
+
+	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"github.com/ploskirev/go-rocket/inventory/internal/model"
 	inventory_v1 "github.com/ploskirev/go-rocket/shared/pkg/proto/inventory/v1"
-	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 func PartToProto(p model.Part) *inventory_v1.Part {
@@ -48,7 +49,7 @@ func MetadataToProto(m map[string]any) map[string]*inventory_v1.Value {
 			r[k] = &inventory_v1.Value{ValueType: &inventory_v1.Value_BoolValue{BoolValue: t}}
 
 		default:
-			fmt.Println("Unsupported type for metadata")
+			log.Println("Unsupported type for metadata")
 		}
 	}
 

@@ -4,11 +4,12 @@ import (
 	"context"
 	"errors"
 
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
+
 	"github.com/ploskirev/go-rocket/inventory/internal/api/inventory/v1/converter"
 	"github.com/ploskirev/go-rocket/inventory/internal/model"
 	inventory_v1 "github.com/ploskirev/go-rocket/shared/pkg/proto/inventory/v1"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
 )
 
 func (a *api) GetPart(ctx context.Context, req *inventory_v1.GetPartRequest) (*inventory_v1.Part, error) {

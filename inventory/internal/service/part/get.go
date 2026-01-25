@@ -7,10 +7,10 @@ import (
 	"github.com/ploskirev/go-rocket/inventory/internal/model"
 )
 
-func (ps *partService) GetPart(ctx context.Context, UUID string) (*model.Part, error) {
-	part, err := ps.pr.GetPart(ctx, UUID)
+func (ps *partService) GetPart(ctx context.Context, uuid string) (*model.Part, error) {
+	part, err := ps.pr.GetPart(ctx, uuid)
 	if err != nil {
-		log.Printf("Error: Get part from repository with uuid: %s \n", UUID)
+		log.Printf("Error: Get part from repository with uuid: %s \n", uuid)
 		return nil, err
 	}
 
