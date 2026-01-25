@@ -2,6 +2,7 @@ package orderservice
 
 import (
 	"context"
+	"fmt"
 	"log"
 
 	"github.com/ploskirev/go-rocket/order/internal/model"
@@ -15,11 +16,11 @@ func (os *orederService) CancelOrder(ctx context.Context, orderUUID string) erro
 	}
 	if orderInfo.Status == model.PAID {
 		log.Printf("Wrong status (conflict)")
-		return model.ErrConflict
+		return fmt.Errorf("%w: Order has status %s", model.ErrConflict, orderInfo.Status)
 	}
 	if orderInfo.Status != model.PENDING_PAYMENT {
 		log.Printf("Wrong status")
-		return model.ErrBadRequest
+		return fmt.Errorf("%w: Order has status %s", model.ErrBadRequest, orderInfo.Status)
 	}
 
 	orderInfo.Status = model.CANCELLED

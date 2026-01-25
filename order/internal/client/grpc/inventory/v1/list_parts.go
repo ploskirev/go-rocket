@@ -2,6 +2,7 @@ package inventoryv1
 
 import (
 	"context"
+	"fmt"
 	"log"
 
 	"github.com/ploskirev/go-rocket/order/internal/client/converter"
@@ -13,7 +14,7 @@ func (c *inventoryClient) ListParts(ctx context.Context) ([]*model.Part, error) 
 	res, err := (c.ic).ListParts(ctx, &inventory_v1.ListPartsRequest{})
 	if err != nil {
 		log.Printf("ERROR: Get part list from inventory service client: %s", err)
-		return nil, err
+		return nil, fmt.Errorf("%w: %w", model.ErrGetListParts, err)
 	}
 
 	partsList := make([]*model.Part, 0, len(res.Parts))

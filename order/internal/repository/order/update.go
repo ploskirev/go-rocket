@@ -8,7 +8,7 @@ import (
 	"github.com/ploskirev/go-rocket/order/internal/repository/converter"
 )
 
-func (or *orederRepo) UpdateOrder(ctx context.Context, orderUUID string, orderInfo *model.Order) error {
+func (or *orderRepo) UpdateOrder(ctx context.Context, orderUUID string, orderInfo *model.Order) error {
 	or.mu.Lock()
 	defer or.mu.Unlock()
 

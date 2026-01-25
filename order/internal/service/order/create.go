@@ -13,7 +13,7 @@ func (os *orederService) CreateOrder(ctx context.Context, createOrderInfo *model
 	existedPartsList, err := os.ic.ListParts(ctx)
 	if err != nil {
 		log.Printf("Error get parts list: %s", err)
-		return nil, model.ErrPartNotFound
+		return nil, err
 	}
 
 	totalPrice := float64(0)

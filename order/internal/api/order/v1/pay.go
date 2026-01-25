@@ -2,6 +2,7 @@ package orderapiv1
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"log"
 
@@ -17,6 +18,14 @@ func (a *api) PayOrder(ctx context.Context, req *order_v1.PayOrderRequest, param
 	})
 	if err != nil {
 		log.Printf("Error pay order: %s", err)
+
+		if errors.Is(err, model.ErrOrderNotFound) {
+			return &order_v1.NotFoundError{
+				Code:    404,
+				Message: fmt.Sprintf("Error pay order (order not found). %s", err),
+			}, nil
+		}
+
 		return &order_v1.InternalServerError{
 			Code:    500,
 			Message: fmt.Sprintf("Error pay order: %s", err),

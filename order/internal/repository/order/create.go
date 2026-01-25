@@ -7,7 +7,7 @@ import (
 	"github.com/ploskirev/go-rocket/order/internal/repository/converter"
 )
 
-func (or *orederRepo) CreateOrder(ctx context.Context, orderInfo *model.Order) *model.Order {
+func (or *orderRepo) CreateOrder(ctx context.Context, orderInfo *model.Order) *model.Order {
 	or.mu.Lock()
 	defer or.mu.Unlock()
 

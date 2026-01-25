@@ -2,6 +2,7 @@ package orderapiv1
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"log"
 
@@ -15,7 +16,14 @@ func (a *api) CreateOrder(ctx context.Context, req *order_v1.CreateOrderRequest)
 		PartUUIDs: req.PartUuids,
 	})
 	if err != nil {
-		log.Printf("Error get list parts: %s", err)
+		log.Printf("Error create order: %s", err)
+		if errors.Is(err, model.ErrPartNotFound) {
+			return &order_v1.NotFoundError{
+				Code:    404,
+				Message: fmt.Sprintf("Error create order: %s", err),
+			}, nil
+		}
+
 		return &order_v1.InternalServerError{
 			Code:    500,
 			Message: fmt.Sprintf("Error create order: %s", err),

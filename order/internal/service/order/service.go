@@ -8,10 +8,10 @@ import (
 type orederService struct {
 	ic grpcClients.InventoryClient
 	pc grpcClients.PaymentClient
-	or repository.OrderRepo
+	or repository.OrderRepository
 }
 
-func NewOrderService(ic grpcClients.InventoryClient, pc grpcClients.PaymentClient, or repository.OrderRepo) *orederService {
+func NewOrderService(ic grpcClients.InventoryClient, pc grpcClients.PaymentClient, or repository.OrderRepository) *orederService {
 	return &orederService{
 		ic: ic,
 		pc: pc,

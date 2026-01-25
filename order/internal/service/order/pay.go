@@ -10,7 +10,7 @@ import (
 func (os *orederService) PayOrder(ctx context.Context, paymentInfo *model.PaymentInfo) (string, error) {
 	orderInfo, err := os.or.GetOrder(ctx, paymentInfo.OrderUUID)
 	if err != nil {
-		log.Printf("Error order not found")
+		log.Printf("Error get order")
 		return "", err
 	}
 
