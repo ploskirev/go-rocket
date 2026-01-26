@@ -34,6 +34,10 @@ jobs:
         with:
           go-version: ${{ inputs.go-version }}
 
+      ##################### Нужно для корреткной работы в ci на go 1.25 #############################
+      - name: Configure Go toolchain
+        run: go env -w GOTOOLCHAIN=go1.25.0+auto
+
       - name: 📌 Install Task
         uses: arduino/setup-task@v2.0.0
 
