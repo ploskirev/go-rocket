@@ -284,8 +284,9 @@ tasks:
         mkdir -p {{.COVERAGE_DIR}}
         
         ERR=0
+        ##################### Нужно для корреткной работы в ci на go 1.25 #############################
         go env -w GOTOOLCHAIN=go1.25.0+auto
-        go env
+        ###############################################################################################
         for mod in {{.MODULES}}; do
           echo "📦 Обрабатываем модуль: $mod"
         
@@ -303,8 +304,6 @@ tasks:
             -coverprofile={{.COVERAGE_DIR}}/$mod.out \
             -covermode=atomic \
             $(echo "$TARGET_PKGS" | tr "," " ") || ERR=1
-
-          # echo $TARGET_PKGS
         done
 
         echo $ERR
