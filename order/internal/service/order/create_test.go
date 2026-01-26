@@ -3,10 +3,11 @@ package orderservice
 import (
 	"errors"
 
+	"github.com/stretchr/testify/mock"
+
 	clientMocks "github.com/ploskirev/go-rocket/order/internal/client/grpc/mocks"
 	"github.com/ploskirev/go-rocket/order/internal/model"
 	repoMocks "github.com/ploskirev/go-rocket/order/internal/repository/mocks"
-	"github.com/stretchr/testify/mock"
 )
 
 func (s *ServiceSuite) Test_CreateOrder() {

@@ -2,6 +2,7 @@ package payment
 
 import (
 	"github.com/google/uuid"
+
 	"github.com/ploskirev/go-rocket/payment/internal/model"
 )
 
