@@ -38,13 +38,13 @@ jobs:
       modules: ${{ needs.extract-vars.outputs.modules }}
       go-version: ${{ needs.extract-vars.outputs.go-version }}
 
-  # coverage:
-  #   if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-  #   uses: ./.github/workflows/test-coverage-reusable.yml
-  #   needs: test
-  #   with:
-  #     modules: ${{ needs.extract-vars.outputs.modules }}
-  #     go-version: ${{ needs.extract-vars.outputs.go-version }}
-  #     gist-id: ""
-  #   secrets:
-  #     GIST_SECRET: ${{ secrets.GIST_SECRET }}
+  coverage:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    uses: ./.github/workflows/test-coverage-reusable.yml
+    needs: test
+    with:
+      modules: ${{ needs.extract-vars.outputs.modules }}
+      go-version: ${{ needs.extract-vars.outputs.go-version }}
+      gist-id: "8b9769bb65dd361947df251c4b6dc96e"
+    secrets:
+      GIST_SECRET: ${{ secrets.GIST_SECRET }}

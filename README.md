@@ -1,1 +1,1 @@
-# go-educational
+![Coverage](https://img.shields.io/endpoint?url=https://gist.github.com/ploskirev/8b9769bb65dd361947df251c4b6dc96e/raw/go-rocket-coverage.json)
