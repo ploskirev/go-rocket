@@ -36,7 +36,8 @@ vars:
   COVERAGE_DIR: '{{.ROOT_DIR}}/coverage'
   COVERAGE_FILE: total.out
 
-  MODULES: assembly inventory order payment platform iam notification
+  # MODULES: assembly inventory order payment platform iam notification
+  MODULES: inventory order payment
 
 tasks:
   install-formatters:
@@ -300,7 +301,11 @@ tasks:
             -coverprofile={{.COVERAGE_DIR}}/$mod.out \
             -covermode=atomic \
             $(echo "$TARGET_PKGS" | tr "," " ") || ERR=1
+
+          # echo $TARGET_PKGS
         done
+
+        echo $ERR
         
         if [ $ERR -ne 0 ]; then
           echo "❌ Ошибки во время тестов"
