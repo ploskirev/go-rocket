@@ -284,6 +284,8 @@ tasks:
         mkdir -p {{.COVERAGE_DIR}}
         
         ERR=0
+        go env -w GOTOOLCHAIN=go1.25.0+auto
+        go env
         for mod in {{.MODULES}}; do
           echo "📦 Обрабатываем модуль: $mod"
         
