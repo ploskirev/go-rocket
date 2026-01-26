@@ -1,1 +1,1 @@
-![Coverage](https://img.shields.io/endpoint?url=https://gist.github.com/ploskirev/8b9769bb65dd361947df251c4b6dc96e/raw/go-rocket-coverage.json)
+![Coverage]([https://img.shields.io/endpoint?url=https://gist.github.com/ploskirev/8b9769bb65dd361947df251c4b6dc96e/raw/go-rocket-coverage.json](https://img.shields.io/endpoint?url=https%3A%2F%2Fgist.githubusercontent.com%2Fploskirev%2F8b9769bb65dd361947df251c4b6dc96e%2Fraw%2F95f58629c679254ea6513d11367fa6a58d75d33d%2Fgo-rocket-coverage.json))
