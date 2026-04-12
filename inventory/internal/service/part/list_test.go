@@ -10,10 +10,10 @@ func (s *ServiceSuite) Test_ListPartsSuccess() {
 
 	filters := &model.Filters{}
 
-	partRepositoryMock.On("ListParts", s.ctx, filters).Return([]*model.Part{{UUID: "123"}, {UUID: "789"}})
+	partRepositoryMock.On("ListParts", s.ctx, filters).Return([]*model.Part{{UUID: "123"}, {UUID: "789"}}, nil)
 
 	service := NewPartService(partRepositoryMock)
-	parts := service.ListParts(s.ctx, filters)
+	parts, _ := service.ListParts(s.ctx, filters)
 
 	s.NotNil(parts)
 	s.Equal(2, len(parts))

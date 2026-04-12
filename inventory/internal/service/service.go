@@ -8,5 +8,5 @@ import (
 
 type PartService interface {
 	GetPart(ctx context.Context, UUID string) (*model.Part, error)
-	ListParts(ctx context.Context, filters *model.Filters) []*model.Part
+	ListParts(ctx context.Context, filters *model.Filters) ([]*model.Part, error)
 }

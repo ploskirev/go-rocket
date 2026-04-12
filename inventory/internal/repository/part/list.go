@@ -2,21 +2,32 @@ package part
 
 import (
 	"context"
+	"log"
 	"slices"
+
+	"go.mongodb.org/mongo-driver/bson"
 
 	"github.com/ploskirev/go-rocket/inventory/internal/model"
 	"github.com/ploskirev/go-rocket/inventory/internal/repository/converter"
 	repoModel "github.com/ploskirev/go-rocket/inventory/internal/repository/model"
 )
 
-func (pr *partRepository) ListParts(_ context.Context, filters *model.Filters) []*model.Part {
-	pr.mu.RLock()
-	defer pr.mu.RUnlock()
+func (pr *partRepository) ListParts(ctx context.Context, filters *model.Filters) ([]*model.Part, error) {
+	cursor, err := pr.collection.Find(ctx, bson.M{})
+	if err != nil {
+		return nil, err
+	}
+	defer func() {
+		cerr := cursor.Close(ctx)
+		if cerr != nil {
+			log.Printf("failed to close cursor: %v\n", cerr)
+		}
+	}()
 
-	parts := make([]*repoModel.Part, 0, len(pr.storage))
-
-	for _, p := range pr.storage {
-		parts = append(parts, p)
+	var parts []*repoModel.Part
+	err = cursor.All(ctx, &parts)
+	if err != nil {
+		return nil, err
 	}
 
 	if filters != nil {
@@ -29,7 +40,7 @@ func (pr *partRepository) ListParts(_ context.Context, filters *model.Filters) [
 		listParts = append(listParts, converter.PartToModel(p))
 	}
 
-	return listParts
+	return listParts, nil
 }
 
 type FiltersMaps struct {

@@ -1,23 +1,23 @@
 services: # Здесь описываются контейнеры, необходимые для gRPC-сервиса
 
   mongo-inventory:
-    image: mongo:7.0.5 # Образ MongoDB версии 7.0.5
+    image: mongo:4.4.23 # Образ MongoDB версии 7.0.5
 
     container_name: mongo-inventory
     # Устанавливаем удобное читаемое имя контейнера — пригодится для логов и отладки
 
     environment: # Переменные окружения для инициализации MongoDB
-      MONGO_INITDB_DATABASE: inventory-mongo # Имя базы данных, которая будет создана при запуске
-      MONGO_INITDB_ROOT_USERNAME: inventory-mongo-user # Имя root-пользователя MongoDB
-      MONGO_INITDB_ROOT_PASSWORD: inventory-mongo-password # Пароль для root-пользователя
+      MONGO_INITDB_ROOT_USERNAME: inventory-mongo-user # Логин для MongoDB из .env
+      MONGO_INITDB_ROOT_PASSWORD: inventory-mongo-password # Пароль для MongoDB из .env
+      MONGO_INITDB_DATABASE: inventory-mongo # Создаем базу данных при инициализации
 
     volumes:
-      - inventory_mongo_data:/data/db
+      - inventorymongodata:/data/db
       # Подключаем локальный Docker-том к директории MongoDB, где хранятся все данные
       # Это нужно для сохранения данных между перезапусками контейнера
 
     ports:
-      - "27017:27017"
+      - "27017:27017" # Пробрасываем порт: внешний из .env, внутренний фиксированный
       # Пробрасываем внутренний порт MongoDB (27017) наружу на порт 27017
       # Это позволяет подключаться к Mongo из внешних инструментов
 
@@ -25,7 +25,8 @@ services: # Здесь описываются контейнеры, необхо
       test:
         [
           "CMD-SHELL",
-          "echo 'db.runCommand({ ping: 1 }).ok' | mongosh --quiet -u inventory-mongo-user -p inventory-mongo-password --authenticationDatabase admin",
+          #  "echo 'db.runCommand({ ping: 1 }).ok' | mongosh --quiet -u ${MONGO_INITDB_ROOT_USERNAME} -p ${MONGO_INITDB_ROOT_PASSWORD} --authenticationDatabase ${MONGO_AUTH_DB}"
+          "echo 'db.runCommand({ ping: 1 }).ok' | mongosh --quiet -u inventory-mongo-user -p inventory-mongo-password"
         ]
       # Проверка готовности MongoDB: выполняем команду ping через mongosh с указанием логина и пароля
       # --quiet отключает лишний вывод, чтобы результатом был только "1" при успехе
@@ -42,7 +43,7 @@ services: # Здесь описываются контейнеры, необхо
       # Подключаем контейнер к общей сети всех микросервисов, чтобы они могли взаимодействовать между собой по имени
 
 volumes: # Раздел с томами — определяем хранилище, которое создаст Docker
-  inventory_mongo_data:
+  inventorymongodata:
   # Именованный том, в котором будут храниться данные MongoDB
   # Он живёт отдельно от контейнера и сохраняется даже после удаления контейнера
 
