@@ -3,21 +3,34 @@ package orderrepo
 import (
 	"context"
 	"log"
+	"strings"
 
+	sq "github.com/Masterminds/squirrel"
 	"github.com/ploskirev/go-rocket/order/internal/model"
-	"github.com/ploskirev/go-rocket/order/internal/repository/converter"
 )
 
 func (or *orderRepo) UpdateOrder(ctx context.Context, orderUUID string, orderInfo *model.Order) error {
-	or.mu.Lock()
-	defer or.mu.Unlock()
-
-	_, ok := or.storage[orderUUID]
-	if !ok {
-		log.Printf("Error order with uuid (%s) not found", orderUUID)
-		return model.ErrOrderNotFound
+	query, args, err := sq.Update("orders").
+		PlaceholderFormat(sq.Dollar).
+		Set("user_uuid", orderInfo.UserUUID).
+		Set("part_uuids", strings.Join(orderInfo.PartUUIDs, ",")).
+		Set("total_price", orderInfo.TotalPrice).
+		Set("transaction_uuid", orderInfo.TransactionUUID).
+		Set("payment_method", orderInfo.PaymentMethod).
+		Set("order_status", orderInfo.Status).
+		Set("updated_at", orderInfo.UpdatedAt).
+		Where(sq.Eq{"order_uuid": orderUUID}).
+		ToSql()
+	if err != nil {
+		log.Printf("failed to build query: %v\n", err)
+		return err
 	}
 
-	or.storage[orderUUID] = converter.OrderToRepoModel(orderInfo)
+	_, err = or.pool.Exec(ctx, query, args...)
+	if err != nil {
+		log.Printf("failed to exec query: %v\n", err)
+		return err
+	}
+
 	return nil
 }

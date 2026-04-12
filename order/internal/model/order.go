@@ -1,13 +1,17 @@
 package model
 
+import "time"
+
 type Order struct {
 	OrderUUID       string
 	UserUUID        string
 	PartUUIDs       []string
 	TotalPrice      float64
-	TransactionUUID *string
-	PaymentMethod   *PaymentMethod
+	TransactionUUID string
+	PaymentMethod   PaymentMethod
 	Status          OrderStatus
+	CreatedAt       time.Time
+	UpdatedAt       time.Time
 }
 
 type OrderStatus string

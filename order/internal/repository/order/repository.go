@@ -1,18 +1,15 @@
 package orderrepo
 
 import (
-	"sync"
-
-	"github.com/ploskirev/go-rocket/order/internal/repository/model"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 type orderRepo struct {
-	mu      sync.RWMutex
-	storage map[string]*model.Order
+	pool *pgxpool.Pool
 }
 
-func NewOrderRepo() *orderRepo {
+func NewOrderRepo(pool *pgxpool.Pool) *orderRepo {
 	return &orderRepo{
-		storage: make(map[string]*model.Order),
+		pool: pool,
 	}
 }

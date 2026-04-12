@@ -29,8 +29,8 @@ func (os *orederService) PayOrder(ctx context.Context, paymentInfo *model.Paymen
 		UserUUID:        orderInfo.UserUUID,
 		PartUUIDs:       orderInfo.PartUUIDs,
 		TotalPrice:      orderInfo.TotalPrice,
-		TransactionUUID: &transactionUUID,
-		PaymentMethod:   &paymentInfo.PaymentMethod,
+		TransactionUUID: transactionUUID,
+		PaymentMethod:   paymentInfo.PaymentMethod,
 		Status:          model.PAID,
 	}); err != nil {
 		log.Printf("Error update order")
