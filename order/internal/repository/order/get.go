@@ -5,6 +5,7 @@ import (
 	"log"
 
 	sq "github.com/Masterminds/squirrel"
+
 	"github.com/ploskirev/go-rocket/order/internal/model"
 	"github.com/ploskirev/go-rocket/order/internal/repository/converter"
 	repoModel "github.com/ploskirev/go-rocket/order/internal/repository/model"

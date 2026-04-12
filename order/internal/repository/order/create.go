@@ -7,6 +7,7 @@ import (
 	"time"
 
 	sq "github.com/Masterminds/squirrel"
+
 	"github.com/ploskirev/go-rocket/order/internal/model"
 )
 
