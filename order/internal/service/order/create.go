@@ -39,13 +39,17 @@ func (os *orederService) CreateOrder(ctx context.Context, createOrderInfo *model
 	}
 	orderUUIDString := orderUUID.String()
 
-	orderInfo := os.or.CreateOrder(ctx, &model.Order{
+	orderInfo, err := os.or.CreateOrder(ctx, &model.Order{
 		OrderUUID:  orderUUIDString,
 		UserUUID:   createOrderInfo.UserUUID,
 		PartUUIDs:  createOrderInfo.PartUUIDs,
 		TotalPrice: totalPrice,
 		Status:     model.PENDING_PAYMENT,
 	})
+	if err != nil {
+		log.Printf("Error create order: %s", err)
+		return nil, model.ErrCreateOrder
+	}
 
 	return orderInfo, nil
 }

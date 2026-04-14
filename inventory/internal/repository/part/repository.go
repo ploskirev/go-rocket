@@ -1,18 +1,17 @@
 package part
 
 import (
-	"sync"
-
-	repoModel "github.com/ploskirev/go-rocket/inventory/internal/repository/model"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 type partRepository struct {
-	mu      sync.RWMutex
-	storage map[string]*repoModel.Part
+	collection *mongo.Collection
 }
 
-func NewPartRepository() *partRepository {
+func NewPartRepository(db *mongo.Database) *partRepository {
+	collection := db.Collection("parts")
+
 	return &partRepository{
-		storage: map[string]*repoModel.Part{},
+		collection: collection,
 	}
 }

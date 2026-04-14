@@ -2,21 +2,24 @@ package part
 
 import (
 	"context"
-	"log"
+	"errors"
+
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
 
 	"github.com/ploskirev/go-rocket/inventory/internal/model"
-	"github.com/ploskirev/go-rocket/inventory/internal/repository/converter"
 )
 
-func (pr *partRepository) GetPart(_ context.Context, uuid string) (*model.Part, error) {
-	pr.mu.RLock()
-	defer pr.mu.RUnlock()
+func (pr *partRepository) GetPart(ctx context.Context, uuid string) (*model.Part, error) {
+	var part model.Part
+	err := pr.collection.FindOne(ctx, bson.M{"uuid": uuid}).Decode(&part)
+	if err != nil {
+		if errors.Is(err, mongo.ErrNoDocuments) {
+			return &model.Part{}, model.ErrPartNotFound
+		}
 
-	part, ok := pr.storage[uuid]
-	if !ok {
-		log.Printf("Part with UUID %s not found\n", uuid)
-		return nil, model.ErrPartNotFound
+		return &model.Part{}, err
 	}
 
-	return converter.PartToModel(part), nil
+	return &part, nil
 }

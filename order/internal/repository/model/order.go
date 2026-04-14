@@ -1,29 +1,15 @@
 package model
 
+import "database/sql"
+
 type Order struct {
-	OrderUUID       string
-	UserUUID        string
-	PartUUIDs       []string
-	TotalPrice      float64
-	TransactionUUID *string
-	PaymentMethod   *PaymentMethod
-	Status          OrderStatus
+	OrderUUID       sql.NullString
+	UserUUID        sql.NullString
+	PartUUIDs       sql.NullString // массив строк в моделе
+	TotalPrice      sql.NullFloat64
+	TransactionUUID sql.NullString
+	PaymentMethod   sql.NullInt32 // enum в моделе
+	Status          sql.NullString
+	CreatedAt       sql.NullTime
+	UpdatedAt       sql.NullTime
 }
-
-type OrderStatus string
-
-const (
-	PENDING_PAYMENT OrderStatus = "PENDING_PAYMENT"
-	PAID            OrderStatus = "PAID"
-	CANCELLED       OrderStatus = "CANCELLED"
-)
-
-type PaymentMethod int32
-
-const (
-	PaymentMethod_UNKNOWN PaymentMethod = iota
-	PaymentMethod_CARD
-	PaymentMethod_SBP
-	PaymentMethod_CREDIT_CARD
-	PaymentMethod_INVESTOR_MONEY
-)

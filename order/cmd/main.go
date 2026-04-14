@@ -13,10 +13,14 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/jackc/pgx/v5/stdlib"
+	"github.com/joho/godotenv"
 
 	orderapiv1 "github.com/ploskirev/go-rocket/order/internal/api/order/v1"
 	inventoryclient "github.com/ploskirev/go-rocket/order/internal/client/grpc/inventory/v1"
 	paymentclient "github.com/ploskirev/go-rocket/order/internal/client/grpc/payment/v1"
+	"github.com/ploskirev/go-rocket/order/internal/migrator"
 	orderrepo "github.com/ploskirev/go-rocket/order/internal/repository/order"
 	orderservice "github.com/ploskirev/go-rocket/order/internal/service/order"
 	order_v1 "github.com/ploskirev/go-rocket/shared/pkg/openapi/order/v1"
@@ -30,6 +34,33 @@ const (
 )
 
 func main() {
+	ctx := context.Background()
+
+	err := godotenv.Load(".env")
+	if err != nil {
+		log.Printf("failed to load .env file: %v\n", err)
+		return
+	}
+
+	dbURI := os.Getenv("DB_URI")
+
+	// Создаем пул соединений с базой данных
+	pool, err := pgxpool.New(ctx, dbURI)
+	if err != nil {
+		log.Printf("failed to connect to database: %v\n", err)
+		return
+	}
+	defer pool.Close()
+
+	migrationsDir := os.Getenv("MIGRATIONS_DIR")
+	migratorRunner := migrator.NewMigrator(stdlib.OpenDBFromPool(pool), migrationsDir)
+
+	err = migratorRunner.Up()
+	if err != nil {
+		log.Printf("Ошибка миграции базы данных: %v\n", err)
+		return
+	}
+
 	inventoryClient, inventoryConn, err := inventoryclient.NewInventoryClient()
 	if err != nil {
 		log.Printf("failed to connect inventory service: %v\n", err)
@@ -51,7 +82,7 @@ func main() {
 		}
 	}()
 
-	orderRepo := orderrepo.NewOrderRepo()
+	orderRepo := orderrepo.NewOrderRepo(pool)
 	orderService := orderservice.NewOrderService(inventoryClient, paymentClient, orderRepo)
 	api := orderapiv1.NewApi(orderService)
 

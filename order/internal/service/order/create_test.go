@@ -33,7 +33,7 @@ func (s *ServiceSuite) Test_CreateOrder() {
 
 	defaultMocksSetup := func(ic *clientMocks.InventoryClient, or *repoMocks.OrderRepository) {
 		ic.EXPECT().ListParts(s.ctx).Return(defaultParts, nil)
-		or.EXPECT().CreateOrder(s.ctx, mock.Anything).Return(defaultOrder)
+		or.EXPECT().CreateOrder(s.ctx, mock.Anything).Return(defaultOrder, nil)
 	}
 
 	tests := []struct {

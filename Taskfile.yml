@@ -35,6 +35,8 @@ vars:
   OPEN_API_FILES: '{{.ROOT_DIR}}/shared/api/bundles'
   COVERAGE_DIR: '{{.ROOT_DIR}}/coverage'
   COVERAGE_FILE: total.out
+  ORDER_MIGRATIONS_DIR: './order/migrations'
+  POSTGRES_DSN: 'postgres://order-db-user:order-db-password@localhost:5432/order-db?sslmode=disable'
 
   # MODULES: assembly inventory order payment platform iam notification
   MODULES: inventory order payment
@@ -365,6 +367,62 @@ tasks:
           fi
         done
         exit $ERR
+
+  up-core:
+    desc: Поднять core контейнеры
+    dir: deploy/compose/core
+    cmds:
+      - echo "[task] 🚀 Поднимаем core контейнеры"
+      - docker-compose up --build --detach
+
+  down-core:
+    desc: Остановить и удалить core контейнеры
+    dir: deploy/compose/core
+    cmds:
+      - echo "[task] 🛑 Останавливаем core контейнеры"
+      - docker-compose down --volumes
+
+  up-inventory:
+    desc: Поднять Inventory сервис и все его зависимости
+    dir: deploy/compose/inventory
+    cmds:
+      - echo "[task] 📦 Поднимаем Inventory с зависимостями"
+      - docker-compose up --build --detach
+
+  down-inventory:
+    desc: Остановить и удалить Inventory сервис и все его зависимости
+    dir: deploy/compose/inventory
+    cmds:
+      - echo "[task] 🛑 Останавливаем Inventory с зависимостями"
+      - docker-compose down --volumes
+
+  up-order:
+    desc: Поднять Order сервис и все его зависимости
+    dir: deploy/compose/order
+    cmds:
+      - echo "[task] 📦 Поднимаем Order с зависимостями"
+      - docker-compose up --build --detach
+
+  down-order:
+    desc: Остановить и удалить Order сервис и все его зависимости
+    dir: deploy/compose/order
+    cmds:
+      - echo "[task] 🛑 Останавливаем Order с зависимостями"
+      - docker-compose down --volumes
+
+  up-all:
+    desc: Поднять все сервисы по очереди вместе с зависимостями
+    cmds:
+      - task up-core
+      - task up-inventory
+      - task up-order
+
+  down-all:
+    desc: Остановить и удалить все сервисы по очереди вместе с зависимостями
+    cmds:
+      - task down-core
+      - task down-inventory
+      - task down-order
 
   grpcurl:install:
     desc: "Устанавливает grpcurl в каталог bin"

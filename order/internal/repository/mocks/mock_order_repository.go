@@ -23,7 +23,7 @@ func (_m *OrderRepository) EXPECT() *OrderRepository_Expecter {
 }
 
 // CreateOrder provides a mock function with given fields: ctx, orderInfo
-func (_m *OrderRepository) CreateOrder(ctx context.Context, orderInfo *model.Order) *model.Order {
+func (_m *OrderRepository) CreateOrder(ctx context.Context, orderInfo *model.Order) (*model.Order, error) {
 	ret := _m.Called(ctx, orderInfo)
 
 	if len(ret) == 0 {
@@ -31,6 +31,10 @@ func (_m *OrderRepository) CreateOrder(ctx context.Context, orderInfo *model.Ord
 	}
 
 	var r0 *model.Order
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, *model.Order) (*model.Order, error)); ok {
+		return rf(ctx, orderInfo)
+	}
 	if rf, ok := ret.Get(0).(func(context.Context, *model.Order) *model.Order); ok {
 		r0 = rf(ctx, orderInfo)
 	} else {
@@ -39,7 +43,13 @@ func (_m *OrderRepository) CreateOrder(ctx context.Context, orderInfo *model.Ord
 		}
 	}
 
-	return r0
+	if rf, ok := ret.Get(1).(func(context.Context, *model.Order) error); ok {
+		r1 = rf(ctx, orderInfo)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
 }
 
 // OrderRepository_CreateOrder_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'CreateOrder'
@@ -61,12 +71,12 @@ func (_c *OrderRepository_CreateOrder_Call) Run(run func(ctx context.Context, or
 	return _c
 }
 
-func (_c *OrderRepository_CreateOrder_Call) Return(_a0 *model.Order) *OrderRepository_CreateOrder_Call {
-	_c.Call.Return(_a0)
+func (_c *OrderRepository_CreateOrder_Call) Return(_a0 *model.Order, _a1 error) *OrderRepository_CreateOrder_Call {
+	_c.Call.Return(_a0, _a1)
 	return _c
 }
 
-func (_c *OrderRepository_CreateOrder_Call) RunAndReturn(run func(context.Context, *model.Order) *model.Order) *OrderRepository_CreateOrder_Call {
+func (_c *OrderRepository_CreateOrder_Call) RunAndReturn(run func(context.Context, *model.Order) (*model.Order, error)) *OrderRepository_CreateOrder_Call {
 	_c.Call.Return(run)
 	return _c
 }

@@ -6,18 +6,14 @@ import (
 )
 
 func OrderToApi(o *model.Order) *order_v1.GetOrderResponse {
-	var transactionUUID string
-	if o.TransactionUUID != nil {
-		transactionUUID = *o.TransactionUUID
-	}
 	return &order_v1.GetOrderResponse{
-		TransactionUUID: transactionUUID,
+		TransactionUUID: o.TransactionUUID,
 		OrderUUID:       o.OrderUUID,
 		UserUUID:        o.UserUUID,
 		PartUuids:       o.PartUUIDs,
 		TotalPrice:      float32(o.TotalPrice),
 		Status:          order_v1.OrderStatus(o.Status),
-		PaymentMethod:   order_v1.PaymentMethod(*o.PaymentMethod),
+		PaymentMethod:   order_v1.PaymentMethod(o.PaymentMethod),
 	}
 }
 

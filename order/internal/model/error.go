@@ -13,4 +13,6 @@ var (
 
 	ErrOrderNotFound = errors.New("order not found")
 	ErrPayOrder      = errors.New("error pay order")
+
+	ErrCreateOrder = errors.New("error while creating order")
 )

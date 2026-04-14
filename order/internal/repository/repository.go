@@ -7,7 +7,7 @@ import (
 )
 
 type OrderRepository interface {
-	CreateOrder(ctx context.Context, orderInfo *model.Order) *model.Order
+	CreateOrder(ctx context.Context, orderInfo *model.Order) (*model.Order, error)
 	GetOrder(ctx context.Context, orderUUID string) (*model.Order, error)
 	UpdateOrder(ctx context.Context, orderUUID string, orderInfo *model.Order) error
 }
