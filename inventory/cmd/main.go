@@ -9,30 +9,29 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/joho/godotenv"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 
 	partApi "github.com/ploskirev/go-rocket/inventory/internal/api/inventory/v1"
+	"github.com/ploskirev/go-rocket/inventory/internal/config"
 	partRepo "github.com/ploskirev/go-rocket/inventory/internal/repository/part"
 	partService "github.com/ploskirev/go-rocket/inventory/internal/service/part"
 	inventory_v1 "github.com/ploskirev/go-rocket/shared/pkg/proto/inventory/v1"
 )
 
-const grpcPort = 50051
+const configPath = "./deploy/compose/inventory/.env"
 
 func main() {
 	ctx := context.Background()
 
-	err := godotenv.Load(".env")
+	err := config.Load(configPath)
 	if err != nil {
-		log.Printf("failed to load .env file: %v\n", err)
-		return
+		panic(fmt.Errorf("failed to load config: %w", err))
 	}
 
-	dbURI := os.Getenv("MONGO_URI")
+	dbURI := config.AppConfig().Mongo.URI()
 	// Создаем клиент MongoDB
 	client, err := mongo.Connect(ctx, options.Client().ApplyURI(dbURI))
 	if err != nil {
@@ -54,9 +53,10 @@ func main() {
 	}
 
 	// Получаем базу данных
-	db := client.Database("inventory-mongo")
+	database := config.AppConfig().Mongo.DatabaseName()
+	db := client.Database(database)
 
-	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", grpcPort))
+	lis, err := net.Listen("tcp", config.AppConfig().InventoryGRPC.Address())
 	if err != nil {
 		log.Printf("failed to listen: %v\n", err)
 	}
@@ -83,7 +83,7 @@ func main() {
 	reflection.Register(s)
 
 	go func() {
-		log.Printf("🚀 gRPC server listening on %d\n", grpcPort)
+		log.Printf("🚀 gRPC server listening on %d\n", config.AppConfig().InventoryGRPC.Address())
 		err = s.Serve(lis)
 		if err != nil {
 			log.Printf("failed to serve: %v\n", err)

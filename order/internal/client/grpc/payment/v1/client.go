@@ -6,11 +6,8 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 
+	"github.com/ploskirev/go-rocket/order/internal/config"
 	payment_v1 "github.com/ploskirev/go-rocket/shared/pkg/proto/payment/v1"
-)
-
-const (
-	paymentAddress = "localhost:50052"
 )
 
 type paymentClient struct {
@@ -18,6 +15,7 @@ type paymentClient struct {
 }
 
 func NewPaymentClient() (*paymentClient, *grpc.ClientConn, error) {
+	paymentAddress := config.AppConfig().Payment.Address()
 	paymentConn, err := grpc.NewClient(
 		paymentAddress,
 		grpc.WithTransportCredentials(insecure.NewCredentials()),

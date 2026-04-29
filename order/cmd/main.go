@@ -3,8 +3,8 @@ package main
 import (
 	"context"
 	"errors"
+	"fmt"
 	"log"
-	"net"
 	"net/http"
 	"os"
 	"os/signal"
@@ -15,7 +15,7 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/jackc/pgx/v5/stdlib"
-	"github.com/joho/godotenv"
+	"github.com/ploskirev/go-rocket/order/internal/config"
 
 	orderapiv1 "github.com/ploskirev/go-rocket/order/internal/api/order/v1"
 	inventoryclient "github.com/ploskirev/go-rocket/order/internal/client/grpc/inventory/v1"
@@ -27,22 +27,21 @@ import (
 )
 
 const (
-	httpPort = "8080"
 	// Таймауты для HTTP-сервера
 	readHeaderTimeout = 5 * time.Second
 	shutdownTimeout   = 10 * time.Second
+	configPath        = "./deploy/compose/order/.env"
 )
 
 func main() {
-	ctx := context.Background()
-
-	err := godotenv.Load(".env")
+	err := config.Load(configPath)
 	if err != nil {
-		log.Printf("failed to load .env file: %v\n", err)
-		return
+		panic(fmt.Errorf("failed to load config: %w", err))
 	}
 
-	dbURI := os.Getenv("DB_URI")
+	ctx := context.Background()
+
+	dbURI := config.AppConfig().Postgres.URI()
 
 	// Создаем пул соединений с базой данных
 	pool, err := pgxpool.New(ctx, dbURI)
@@ -52,7 +51,8 @@ func main() {
 	}
 	defer pool.Close()
 
-	migrationsDir := os.Getenv("MIGRATIONS_DIR")
+	migrationsDir := config.AppConfig().Postgres.MigrationsDir()
+	fmt.Println("MIGR DIR: ", dbURI)
 	migratorRunner := migrator.NewMigrator(stdlib.OpenDBFromPool(pool), migrationsDir)
 
 	err = migratorRunner.Up()
@@ -105,7 +105,7 @@ func main() {
 
 	// Запускаем HTTP-сервер
 	server := &http.Server{
-		Addr:              net.JoinHostPort("localhost", httpPort),
+		Addr:              config.AppConfig().OrderHTTP.Address(),
 		Handler:           r,
 		ReadHeaderTimeout: readHeaderTimeout, // Защита от Slowloris атак - тип DDoS-атаки, при которой
 		// атакующий умышленно медленно отправляет HTTP-заголовки, удерживая соединения открытыми и истощая
@@ -115,7 +115,7 @@ func main() {
 
 	// Запускаем сервер в отдельной горутине
 	go func() {
-		log.Printf("🚀 HTTP-сервер запущен на порту %s\n", httpPort)
+		log.Printf("🚀 HTTP-сервер запущен gо адресу %s\n", config.AppConfig().OrderHTTP.Address())
 		err = server.ListenAndServe()
 		if err != nil && !errors.Is(err, http.ErrServerClosed) {
 			log.Printf("❌ Ошибка запуска сервера: %v\n", err)
