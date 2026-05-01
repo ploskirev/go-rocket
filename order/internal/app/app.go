@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"net"
 	"net/http"
 	"os"
 	"os/signal"
@@ -28,7 +27,6 @@ const (
 type App struct {
 	diContainer *diContainer
 	httpServer  *http.Server
-	listener    net.Listener
 }
 
 func New(ctx context.Context) (*App, error) {

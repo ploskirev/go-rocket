@@ -5,19 +5,18 @@ import (
 	"fmt"
 	"log"
 
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
+	"go.mongodb.org/mongo-driver/mongo/readpref"
+
 	inventoryV1API "github.com/ploskirev/go-rocket/inventory/internal/api/inventory/v1"
 	"github.com/ploskirev/go-rocket/inventory/internal/config"
-	"github.com/ploskirev/go-rocket/platform/pkg/closer"
-	inventoryV1 "github.com/ploskirev/go-rocket/shared/pkg/proto/inventory/v1"
-
 	"github.com/ploskirev/go-rocket/inventory/internal/repository"
 	inventoryRepository "github.com/ploskirev/go-rocket/inventory/internal/repository/part"
 	"github.com/ploskirev/go-rocket/inventory/internal/service"
 	inventoryService "github.com/ploskirev/go-rocket/inventory/internal/service/part"
-
-	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
-	"go.mongodb.org/mongo-driver/mongo/readpref"
+	"github.com/ploskirev/go-rocket/platform/pkg/closer"
+	inventoryV1 "github.com/ploskirev/go-rocket/shared/pkg/proto/inventory/v1"
 )
 
 type diContainer struct {

@@ -9,9 +9,8 @@ import (
 
 	"go.uber.org/zap"
 
-	"github.com/ploskirev/go-rocket/payment/internal/config"
-
 	"github.com/ploskirev/go-rocket/payment/internal/app"
+	"github.com/ploskirev/go-rocket/payment/internal/config"
 	"github.com/ploskirev/go-rocket/platform/pkg/closer"
 	"github.com/ploskirev/go-rocket/platform/pkg/logger"
 )

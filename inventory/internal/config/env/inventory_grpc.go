@@ -1,7 +1,6 @@
 package env
 
 import (
-	"fmt"
 	"net"
 
 	"github.com/caarlos0/env/v11"
@@ -21,8 +20,6 @@ func NewInventoryGRPCConfig() (*inventoryGRPCConfig, error) {
 	if err := env.Parse(&raw); err != nil {
 		return nil, err
 	}
-
-	fmt.Println("WTF: ", raw.Host, raw.Port)
 
 	return &inventoryGRPCConfig{raw: raw}, nil
 }

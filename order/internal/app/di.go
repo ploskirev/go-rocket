@@ -7,19 +7,17 @@ import (
 
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/jackc/pgx/v5/stdlib"
+
+	orderapiv1 "github.com/ploskirev/go-rocket/order/internal/api/order/v1"
+	inventoryclient "github.com/ploskirev/go-rocket/order/internal/client/grpc/inventory/v1"
+	paymentclient "github.com/ploskirev/go-rocket/order/internal/client/grpc/payment/v1"
 	"github.com/ploskirev/go-rocket/order/internal/config"
 	"github.com/ploskirev/go-rocket/order/internal/migrator"
-	"github.com/ploskirev/go-rocket/platform/pkg/closer"
-
 	"github.com/ploskirev/go-rocket/order/internal/repository"
 	orderRepository "github.com/ploskirev/go-rocket/order/internal/repository/order"
 	"github.com/ploskirev/go-rocket/order/internal/service"
 	orderService "github.com/ploskirev/go-rocket/order/internal/service/order"
-
-	inventoryclient "github.com/ploskirev/go-rocket/order/internal/client/grpc/inventory/v1"
-	paymentclient "github.com/ploskirev/go-rocket/order/internal/client/grpc/payment/v1"
-
-	orderapiv1 "github.com/ploskirev/go-rocket/order/internal/api/order/v1"
+	"github.com/ploskirev/go-rocket/platform/pkg/closer"
 )
 
 type diContainer struct {

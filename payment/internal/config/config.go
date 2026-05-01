@@ -4,6 +4,7 @@ import (
 	"os"
 
 	"github.com/joho/godotenv"
+
 	"github.com/ploskirev/go-rocket/payment/internal/config/env"
 )
 

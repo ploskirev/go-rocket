@@ -4,10 +4,9 @@ import (
 	"context"
 
 	paymentV1API "github.com/ploskirev/go-rocket/payment/internal/api/payment/v1"
-	paymentV1 "github.com/ploskirev/go-rocket/shared/pkg/proto/payment/v1"
-
 	"github.com/ploskirev/go-rocket/payment/internal/service"
 	paymentService "github.com/ploskirev/go-rocket/payment/internal/service/payment"
+	paymentV1 "github.com/ploskirev/go-rocket/shared/pkg/proto/payment/v1"
 )
 
 type diContainer struct {
