@@ -11,7 +11,7 @@ import (
 	order_v1 "github.com/ploskirev/go-rocket/shared/pkg/openapi/order/v1"
 )
 
-func (a *api) GetOrder(ctx context.Context, params order_v1.GetOrderParams) (order_v1.GetOrderRes, error) {
+func (a *Api) GetOrder(ctx context.Context, params order_v1.GetOrderParams) (order_v1.GetOrderRes, error) {
 	order, err := a.os.GetOrder(ctx, params.OrderUUID)
 	if err != nil {
 		log.Printf("Error get order: %s", err)

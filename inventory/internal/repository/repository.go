@@ -9,4 +9,5 @@ import (
 type PartRepository interface {
 	GetPart(ctx context.Context, uuid string) (*model.Part, error)
 	ListParts(ctx context.Context, filters *model.Filters) ([]*model.Part, error)
+	InitStorage(ctx context.Context) error
 }

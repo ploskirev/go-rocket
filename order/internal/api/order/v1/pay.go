@@ -11,7 +11,7 @@ import (
 	order_v1 "github.com/ploskirev/go-rocket/shared/pkg/openapi/order/v1"
 )
 
-func (a *api) PayOrder(ctx context.Context, req *order_v1.PayOrderRequest, params order_v1.PayOrderParams) (order_v1.PayOrderRes, error) {
+func (a *Api) PayOrder(ctx context.Context, req *order_v1.PayOrderRequest, params order_v1.PayOrderParams) (order_v1.PayOrderRes, error) {
 	transactionUUID, err := a.os.PayOrder(ctx, &model.PaymentInfo{
 		OrderUUID:     params.OrderUUID,
 		PaymentMethod: converter.PaymentMthodToModel(req.PaymentMethod),

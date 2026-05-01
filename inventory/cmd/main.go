@@ -3,99 +3,49 @@ package main
 import (
 	"context"
 	"fmt"
-	"log"
-	"net"
-	"os"
 	"os/signal"
 	"syscall"
+	"time"
 
-	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/reflection"
-
-	partApi "github.com/ploskirev/go-rocket/inventory/internal/api/inventory/v1"
+	"github.com/ploskirev/go-rocket/inventory/internal/app"
 	"github.com/ploskirev/go-rocket/inventory/internal/config"
-	partRepo "github.com/ploskirev/go-rocket/inventory/internal/repository/part"
-	partService "github.com/ploskirev/go-rocket/inventory/internal/service/part"
-	inventory_v1 "github.com/ploskirev/go-rocket/shared/pkg/proto/inventory/v1"
+	"github.com/ploskirev/go-rocket/platform/pkg/closer"
+	"github.com/ploskirev/go-rocket/platform/pkg/logger"
+	"go.uber.org/zap"
 )
 
 const configPath = "./deploy/compose/inventory/.env"
 
 func main() {
-	ctx := context.Background()
-
 	err := config.Load(configPath)
 	if err != nil {
 		panic(fmt.Errorf("failed to load config: %w", err))
 	}
 
-	dbURI := config.AppConfig().Mongo.URI()
-	// Создаем клиент MongoDB
-	client, err := mongo.Connect(ctx, options.Client().ApplyURI(dbURI))
-	if err != nil {
-		log.Printf("failed to connect to database: %v\n", err)
-		return
-	}
-	defer func() {
-		cerr := client.Disconnect(ctx)
-		if cerr != nil {
-			log.Printf("failed to disconnect: %v\n", cerr)
-		}
-	}()
+	appCtx, appCancel := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
+	defer appCancel()
+	defer gracefulShutdown()
 
-	// Проверяем соединение с базой данных
-	err = client.Ping(ctx, nil)
+	closer.Configure(syscall.SIGINT, syscall.SIGTERM)
+
+	a, err := app.New(appCtx)
 	if err != nil {
-		log.Printf("failed to ping database: %v\n", err)
+		logger.Error(appCtx, "❌ Не удалось создать приложение", zap.Error(err))
 		return
 	}
 
-	// Получаем базу данных
-	database := config.AppConfig().Mongo.DatabaseName()
-	db := client.Database(database)
-
-	lis, err := net.Listen("tcp", config.AppConfig().InventoryGRPC.Address())
+	err = a.Run(appCtx)
 	if err != nil {
-		log.Printf("failed to listen: %v\n", err)
-	}
-	defer func() {
-		if cerr := lis.Close(); cerr != nil {
-			log.Printf("failed to close listener: %v\n", cerr)
-		}
-	}()
-
-	s := grpc.NewServer()
-
-	partRepo := partRepo.NewPartRepository(db)
-	err = partRepo.InitStorage(ctx)
-	if err != nil {
-		log.Printf("failed to init repo %s \n", err)
+		logger.Error(appCtx, "❌ Ошибка при работе приложения", zap.Error(err))
 		return
 	}
+}
 
-	partService := partService.NewPartService(partRepo)
-	api := partApi.NewApi(partService)
+func gracefulShutdown() {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
 
-	inventory_v1.RegisterInventoryServiceServer(s, api)
-
-	reflection.Register(s)
-
-	go func() {
-		log.Printf("🚀 gRPC server listening on %d\n", config.AppConfig().InventoryGRPC.Address())
-		err = s.Serve(lis)
-		if err != nil {
-			log.Printf("failed to serve: %v\n", err)
-			return
-		}
-	}()
-
-	// Graceful shutdown
-	quit := make(chan os.Signal, 1)
-	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
-	<-quit
-	log.Println("🛑 Shutting down gRPC server...")
-	s.GracefulStop()
-	log.Println("✅ Server stopped")
+	if err := closer.CloseAll(ctx); err != nil {
+		logger.Error(ctx, "❌ Ошибка при завершении работы", zap.Error(err))
+	}
 }

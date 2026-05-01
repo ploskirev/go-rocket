@@ -10,7 +10,7 @@ import (
 	order_v1 "github.com/ploskirev/go-rocket/shared/pkg/openapi/order/v1"
 )
 
-func (a *api) CancelOrder(ctx context.Context, params order_v1.CancelOrderParams) (order_v1.CancelOrderRes, error) {
+func (a *Api) CancelOrder(ctx context.Context, params order_v1.CancelOrderParams) (order_v1.CancelOrderRes, error) {
 	if err := a.os.CancelOrder(ctx, params.OrderUUID); err != nil {
 		log.Printf("Error cancel order")
 

@@ -10,11 +10,11 @@ import (
 	payment_v1 "github.com/ploskirev/go-rocket/shared/pkg/proto/payment/v1"
 )
 
-type paymentClient struct {
+type PaymentClient struct {
 	pc payment_v1.PaymentServiceClient
 }
 
-func NewPaymentClient() (*paymentClient, *grpc.ClientConn, error) {
+func NewPaymentClient() (*PaymentClient, *grpc.ClientConn, error) {
 	paymentAddress := config.AppConfig().Payment.Address()
 	paymentConn, err := grpc.NewClient(
 		paymentAddress,
@@ -26,7 +26,7 @@ func NewPaymentClient() (*paymentClient, *grpc.ClientConn, error) {
 	}
 	pc := payment_v1.NewPaymentServiceClient(paymentConn)
 
-	return &paymentClient{
+	return &PaymentClient{
 		pc: pc,
 	}, paymentConn, nil
 }

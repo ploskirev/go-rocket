@@ -8,17 +8,17 @@ import (
 	order_v1 "github.com/ploskirev/go-rocket/shared/pkg/openapi/order/v1"
 )
 
-type api struct {
+type Api struct {
 	os service.OrderService
 }
 
-func NewApi(os service.OrderService) *api {
-	return &api{
+func NewApi(os service.OrderService) *Api {
+	return &Api{
 		os: os,
 	}
 }
 
-func (a *api) NewError(ctx context.Context, err error) *order_v1.GenericErrorStatusCode {
+func (a *Api) NewError(ctx context.Context, err error) *order_v1.GenericErrorStatusCode {
 	return &order_v1.GenericErrorStatusCode{
 		StatusCode: http.StatusInternalServerError,
 		Response: order_v1.GenericError{

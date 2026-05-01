@@ -10,7 +10,7 @@ import (
 	order_v1 "github.com/ploskirev/go-rocket/shared/pkg/openapi/order/v1"
 )
 
-func (a *api) CreateOrder(ctx context.Context, req *order_v1.CreateOrderRequest) (order_v1.CreateOrderRes, error) {
+func (a *Api) CreateOrder(ctx context.Context, req *order_v1.CreateOrderRequest) (order_v1.CreateOrderRes, error) {
 	orderInfo, err := a.os.CreateOrder(ctx, &model.CreateOrderData{
 		UserUUID:  req.UserUUID,
 		PartUUIDs: req.PartUuids,

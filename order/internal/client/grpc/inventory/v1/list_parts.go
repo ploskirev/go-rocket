@@ -10,7 +10,7 @@ import (
 	inventory_v1 "github.com/ploskirev/go-rocket/shared/pkg/proto/inventory/v1"
 )
 
-func (c *inventoryClient) ListParts(ctx context.Context) ([]*model.Part, error) {
+func (c *InventoryClient) ListParts(ctx context.Context) ([]*model.Part, error) {
 	res, err := (c.ic).ListParts(ctx, &inventory_v1.ListPartsRequest{})
 	if err != nil {
 		log.Printf("ERROR: Get part list from inventory service client: %s", err)

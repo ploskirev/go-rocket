@@ -81,6 +81,52 @@ func (_c *PartRepository_GetPart_Call) RunAndReturn(run func(context.Context, st
 	return _c
 }
 
+// InitStorage provides a mock function with given fields: ctx
+func (_m *PartRepository) InitStorage(ctx context.Context) error {
+	ret := _m.Called(ctx)
+
+	if len(ret) == 0 {
+		panic("no return value specified for InitStorage")
+	}
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(context.Context) error); ok {
+		r0 = rf(ctx)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
+// PartRepository_InitStorage_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'InitStorage'
+type PartRepository_InitStorage_Call struct {
+	*mock.Call
+}
+
+// InitStorage is a helper method to define mock.On call
+//   - ctx context.Context
+func (_e *PartRepository_Expecter) InitStorage(ctx interface{}) *PartRepository_InitStorage_Call {
+	return &PartRepository_InitStorage_Call{Call: _e.mock.On("InitStorage", ctx)}
+}
+
+func (_c *PartRepository_InitStorage_Call) Run(run func(ctx context.Context)) *PartRepository_InitStorage_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(context.Context))
+	})
+	return _c
+}
+
+func (_c *PartRepository_InitStorage_Call) Return(_a0 error) *PartRepository_InitStorage_Call {
+	_c.Call.Return(_a0)
+	return _c
+}
+
+func (_c *PartRepository_InitStorage_Call) RunAndReturn(run func(context.Context) error) *PartRepository_InitStorage_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // ListParts provides a mock function with given fields: ctx, filters
 func (_m *PartRepository) ListParts(ctx context.Context, filters *model.Filters) ([]*model.Part, error) {
 	ret := _m.Called(ctx, filters)
