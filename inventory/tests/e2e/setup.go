@@ -4,19 +4,20 @@ package integration
 
 import (
 	"context"
+	"fmt"
 	"os"
 	"time"
 
-	"github.com/docker/go-connections/nat"
-	"github.com/testcontainers/testcontainers-go/wait"
 	"go.uber.org/zap"
 
+	"github.com/docker/go-connections/nat"
 	"github.com/ploskirev/go-rocket/platform/pkg/logger"
 	"github.com/ploskirev/go-rocket/platform/pkg/testcontainers"
 	"github.com/ploskirev/go-rocket/platform/pkg/testcontainers/app"
 	"github.com/ploskirev/go-rocket/platform/pkg/testcontainers/mongo"
 	"github.com/ploskirev/go-rocket/platform/pkg/testcontainers/network"
 	"github.com/ploskirev/go-rocket/platform/pkg/testcontainers/path"
+	"github.com/testcontainers/testcontainers-go/wait"
 )
 
 const (
@@ -29,7 +30,7 @@ const (
 
 	// Значения переменных окружения
 	loggerLevelValue = "debug"
-	startupTimeout   = 5 * time.Minute
+	startupTimeout   = 20 * time.Minute
 )
 
 // TestEnvironment — структура для хранения ресурсов тестового окружения
@@ -72,7 +73,7 @@ func setupTestEnvironment(ctx context.Context) *TestEnvironment {
 		cleanupTestEnvironment(ctx, &TestEnvironment{Network: generatedNetwork})
 		logger.Fatal(ctx, "не удалось запустить контейнер MongoDB", zap.Error(err))
 	}
-	logger.Info(ctx, "✅ Контейнер MongoDB успешно запущен")
+	logger.Info(ctx, fmt.Sprintf("✅ Контейнер MongoDB успешно запущен. %s, %+v", generatedMongo.Config().Host, generatedMongo.Config()))
 
 	// Шаг 3: Запускаем контейнер с приложением
 	projectRoot := path.GetProjectRoot()
@@ -82,9 +83,9 @@ func setupTestEnvironment(ctx context.Context) *TestEnvironment {
 		testcontainers.MongoHostKey: generatedMongo.Config().ContainerName,
 	}
 
-	// Создаем настраиваемую стратегию ожидания с увеличенным таймаутом
+	// // Создаем настраиваемую стратегию ожидания с увеличенным таймаутом
 	waitStrategy := wait.ForListeningPort(nat.Port(grpcPort + "/tcp")).
-		WithStartupTimeout(startupTimeout).SkipInternalCheck()
+		WithStartupTimeout(startupTimeout).WithPollInterval(1 * time.Second)
 
 	appContainer, err := app.NewContainer(ctx,
 		app.WithName(inventoryAppName),

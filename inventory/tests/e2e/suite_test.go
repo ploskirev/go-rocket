@@ -49,6 +49,8 @@ var _ = BeforeSuite(func() {
 	// Устанавливаем переменные в окружение процесса
 	for key, value := range envVars {
 		_ = os.Setenv(key, value)
+
+		logger.Info(context.Background(), fmt.Sprintf("ENV VALUE: %s: %s", key, value))
 	}
 
 	logger.Info(suiteCtx, "Запуск тестового окружения...")
@@ -56,9 +58,9 @@ var _ = BeforeSuite(func() {
 })
 
 var _ = AfterSuite(func() {
-	logger.Info(context.Background(), "Завершение набора тестов")
-	if env != nil {
-		teardownTestEnvironment(suiteCtx, env)
-	}
+	// logger.Info(context.Background(), "Завершение набора тестов")
+	// if env != nil {
+	// 	teardownTestEnvironment(suiteCtx, env)
+	// }
 	suiteCancel()
 })

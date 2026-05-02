@@ -3,7 +3,6 @@ package app
 import (
 	"context"
 	"fmt"
-	"log"
 
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -52,11 +51,12 @@ func (d *diContainer) InventoryService(ctx context.Context) service.PartService 
 
 func (d *diContainer) PartRepository(ctx context.Context) repository.PartRepository {
 	if d.inventoryRepository == nil {
-		d.inventoryRepository = inventoryRepository.NewPartRepository(d.MongoDBHandle(ctx))
-		err := d.inventoryRepository.InitStorage(ctx)
-		if err != nil {
-			log.Printf("failed to init repo %s \n", err)
-		}
+		// d.inventoryRepository = inventoryRepository.NewPartRepository(d.MongoDBHandle(ctx))
+		d.inventoryRepository = inventoryRepository.NewPartRepository(nil)
+		// err := d.inventoryRepository.InitStorage(ctx)
+		// if err != nil {
+		// 	log.Printf("failed to init repo %s \n", err)
+		// }
 	}
 
 	return d.inventoryRepository

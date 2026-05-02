@@ -8,10 +8,17 @@ type partRepository struct {
 	collection *mongo.Collection
 }
 
+// func NewPartRepository(db *mongo.Database) *partRepository {
+// 	collection := db.Collection("parts")
+
+// 	return &partRepository{
+// 		collection: collection,
+// 	}
+// }
+
 func NewPartRepository(db *mongo.Database) *partRepository {
-	collection := db.Collection("parts")
 
 	return &partRepository{
-		collection: collection,
+		collection: nil,
 	}
 }

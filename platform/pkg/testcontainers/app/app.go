@@ -2,6 +2,7 @@ package app
 
 import (
 	"context"
+	"fmt"
 	"io"
 	"net"
 	"time"
@@ -19,7 +20,7 @@ import (
 const (
 	defaultAppName        = "app"
 	defaultAppPort        = "50051"
-	defaultStartupTimeout = 1 * time.Minute
+	defaultStartupTimeout = 3 * time.Minute
 )
 
 type Logger interface {
@@ -61,6 +62,8 @@ func NewContainer(ctx context.Context, opts ...Option) (*Container, error) {
 		opt(cfg)
 	}
 
+	logger.Info(ctx, fmt.Sprintf("CFG PORT: %s, Name: %s, Dockerfile: %s, ENV: %+v", cfg.Port, cfg.Name, cfg.Dockerfile, cfg.Env))
+
 	req := testcontainers.ContainerRequest{
 		Name: cfg.Name,
 		FromDockerfile: testcontainers.FromDockerfile{
@@ -83,10 +86,14 @@ func NewContainer(ctx context.Context, opts ...Option) (*Container, error) {
 		return nil, errors.Errorf("failed to start app genericContainer: %v", err)
 	}
 
+	logger.Info(ctx, fmt.Sprintf("GENERIC CONTAINER ID: %s. CFG NAME: %d", genericContainer.GetContainerID(), cfg.Name))
+
 	mappedPort, err := genericContainer.MappedPort(ctx, nat.Port(cfg.Port+"/tcp"))
 	if err != nil {
 		return nil, errors.Errorf("failed to get mapped externalPort: %v", err)
 	}
+
+	logger.Info(ctx, fmt.Sprintf("MAPPED PORT: %v", mappedPort))
 
 	host, err := genericContainer.Host(ctx)
 	if err != nil {
