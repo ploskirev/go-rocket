@@ -96,7 +96,9 @@ func setupTestEnvironment(ctx context.Context) *TestEnvironment {
 
 	// // Создаем настраиваемую стратегию ожидания с увеличенным таймаутом
 	waitStrategy := wait.ForListeningPort(nat.Port(grpcPort + "/tcp")).
-		WithStartupTimeout(startupTimeout).WithPollInterval(1 * time.Second)
+		WithStartupTimeout(startupTimeout).
+		WithPollInterval(1 * time.Second).
+		SkipInternalCheck()
 
 	appContainer, err := app.NewContainer(ctx,
 		app.WithName(inventoryAppName),
