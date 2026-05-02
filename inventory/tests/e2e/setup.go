@@ -9,12 +9,14 @@ import (
 
 	"go.uber.org/zap"
 
+	"github.com/docker/go-connections/nat"
 	"github.com/ploskirev/go-rocket/platform/pkg/logger"
 	"github.com/ploskirev/go-rocket/platform/pkg/testcontainers"
 	"github.com/ploskirev/go-rocket/platform/pkg/testcontainers/app"
 	"github.com/ploskirev/go-rocket/platform/pkg/testcontainers/mongo"
 	"github.com/ploskirev/go-rocket/platform/pkg/testcontainers/network"
 	"github.com/ploskirev/go-rocket/platform/pkg/testcontainers/path"
+	"github.com/testcontainers/testcontainers-go/wait"
 )
 
 const (
@@ -27,7 +29,7 @@ const (
 
 	// Значения переменных окружения
 	loggerLevelValue = "debug"
-	startupTimeout   = 3 * time.Minute
+	startupTimeout   = 5 * time.Minute
 )
 
 // TestEnvironment — структура для хранения ресурсов тестового окружения
@@ -80,9 +82,9 @@ func setupTestEnvironment(ctx context.Context) *TestEnvironment {
 		testcontainers.MongoHostKey: generatedMongo.Config().ContainerName,
 	}
 
-	// // Создаем настраиваемую стратегию ожидания с увеличенным таймаутом
-	// waitStrategy := wait.ForListeningPort(nat.Port(grpcPort + "/tcp")).
-	// 	WithStartupTimeout(startupTimeout)
+	// Создаем настраиваемую стратегию ожидания с увеличенным таймаутом
+	waitStrategy := wait.ForListeningPort(nat.Port(grpcPort + "/tcp")).
+		WithStartupTimeout(startupTimeout).SkipInternalCheck()
 
 	appContainer, err := app.NewContainer(ctx,
 		app.WithName(inventoryAppName),
@@ -91,7 +93,7 @@ func setupTestEnvironment(ctx context.Context) *TestEnvironment {
 		app.WithNetwork(generatedNetwork.Name()),
 		app.WithEnv(appEnv),
 		app.WithLogOutput(os.Stdout),
-		// app.WithStartupWait(waitStrategy),
+		app.WithStartupWait(waitStrategy),
 		app.WithLogger(logger.Logger()),
 	)
 	if err != nil {
