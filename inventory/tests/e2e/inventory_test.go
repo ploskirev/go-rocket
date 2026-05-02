@@ -1,4 +1,4 @@
-//go:tag integration
+//go:build integration
 
 package integration
 
@@ -15,9 +15,8 @@ import (
 
 var _ = Describe("InventoryService", func() {
 	var (
-		ctx    context.Context
-		cancel context.CancelFunc
-		// ufoClient ufoV1.UFOServiceClient
+		ctx             context.Context
+		cancel          context.CancelFunc
 		inventoryClient inventoryV1.InventoryServiceClient
 	)
 
@@ -64,6 +63,10 @@ var _ = Describe("InventoryService", func() {
 			var err error
 			partUUID, err = env.InsertTestPart(ctx)
 			Expect(err).ToNot(HaveOccurred(), "ожидали успешную вставку тестовой детали в MongoDB")
+		})
+
+		It("Mock TEST", func() {
+			Expect(true).To(BeTrue())
 		})
 
 		It("должен успешно возвращать деталь по UUID", func() {

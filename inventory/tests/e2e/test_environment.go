@@ -1,4 +1,4 @@
-//go:tag integration
+//go:build integration
 
 package integration
 
@@ -18,11 +18,9 @@ func (env *TestEnvironment) InsertTestPart(ctx context.Context) (string, error) 
 	// now := time.Now()
 
 	part := bson.M{
-		"_id": partUUID,
-		"info": bson.M{
-			"name":  gofakeit.Name(),
-			"price": gofakeit.Price(1, 1000),
-		},
+		"uuid":  partUUID,
+		"name":  gofakeit.Name(),
+		"price": gofakeit.Price(1, 1000),
 		// "created_at": primitive.NewDateTimeFromTime(now),
 	}
 
@@ -48,11 +46,9 @@ func (env *TestEnvironment) InsertTestPartWithData(ctx context.Context, info *in
 	// observedAt := info.GetObservedAt().AsTime()
 
 	part := bson.M{
-		"_id": partUUID,
-		"info": bson.M{
-			"name":  info.Name,
-			"price": info.Price,
-		},
+		"uuid":  partUUID,
+		"name":  info.Name,
+		"price": info.Price,
 		// "created_at": primitive.NewDateTimeFromTime(now),
 	}
 

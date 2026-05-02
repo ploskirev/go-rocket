@@ -1,4 +1,4 @@
-//go:tag integration
+//go:build integration
 
 package integration
 
@@ -60,5 +60,8 @@ var _ = AfterSuite(func() {
 	if env != nil {
 		teardownTestEnvironment(suiteCtx, env)
 	}
-	suiteCancel()
+
+	if suiteCancel != nil {
+		suiteCancel()
+	}
 })

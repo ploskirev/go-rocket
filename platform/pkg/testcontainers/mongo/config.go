@@ -49,6 +49,6 @@ func buildConfig(opts ...Option) *Config {
 
 func defaultHostConfig() func(hc *container.HostConfig) {
 	return func(hc *container.HostConfig) {
-		hc.AutoRemove = true
+		hc.AutoRemove = false
 	}
 }

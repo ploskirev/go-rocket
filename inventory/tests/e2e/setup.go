@@ -1,4 +1,4 @@
-//go:tag integration
+//go:build integration
 
 package integration
 
@@ -7,7 +7,6 @@ import (
 	"os"
 	"time"
 
-	"github.com/docker/go-connections/nat"
 	"github.com/testcontainers/testcontainers-go/wait"
 	"go.uber.org/zap"
 
@@ -57,7 +56,9 @@ func setupTestEnvironment(ctx context.Context) *TestEnvironment {
 	mongoDatabase := getEnvWithLogging(ctx, testcontainers.MongoDatabaseKey)
 
 	// Получаем порт gRPC для waitStrategy
+	grpcHost := getEnvWithLogging(ctx, "GRPC_HOST")
 	grpcPort := getEnvWithLogging(ctx, grpcPortKey)
+	mongoAuthDB := getEnvWithLogging(ctx, testcontainers.MongoAuthDBKey)
 
 	// Шаг 2: Запускаем контейнер с MongoDB
 	generatedMongo, err := mongo.NewContainer(ctx,
@@ -65,6 +66,7 @@ func setupTestEnvironment(ctx context.Context) *TestEnvironment {
 		mongo.WithContainerName(testcontainers.MongoContainerName),
 		mongo.WithImageName(mongoImageName),
 		mongo.WithDatabase(mongoDatabase),
+		mongo.WithAuthDB(mongoAuthDB),
 		mongo.WithAuth(mongoUsername, mongoPassword),
 		mongo.WithLogger(logger.Logger()),
 	)
@@ -79,23 +81,32 @@ func setupTestEnvironment(ctx context.Context) *TestEnvironment {
 
 	appEnv := map[string]string{
 		// Передаём в контейнер обязательные переменные из окружения теста
+		"GRPC_HOST":                      grpcHost,
 		grpcPortKey:                      grpcPort,
 		"LOGGER_LEVEL":                   getEnvWithLogging(ctx, "LOGGER_LEVEL"),
 		"LOGGER_AS_JSON":                 getEnvWithLogging(ctx, "LOGGER_AS_JSON"),
 		testcontainers.MongoImageNameKey: mongoImageName,
-		testcontainers.MongoPortKey:      getEnvWithLogging(ctx, testcontainers.MongoPortKey),
 		"EXTERNAL_MONGO_PORT":            getEnvWithLogging(ctx, "EXTERNAL_MONGO_PORT"),
+		testcontainers.MongoPortKey:      getEnvWithLogging(ctx, testcontainers.MongoPortKey),
 		testcontainers.MongoDatabaseKey:  mongoDatabase,
-		testcontainers.MongoAuthDBKey:    getEnvWithLogging(ctx, testcontainers.MongoAuthDBKey),
-		testcontainers.MongoUsernameKey:  mongoUsername,
-		testcontainers.MongoPasswordKey:  mongoPassword,
+		testcontainers.MongoAuthDBKey:    mongoAuthDB,
+		// testcontainers.MongoAuthDBKey:    getEnvWithLogging(ctx, testcontainers.MongoAuthDBKey),
+		testcontainers.MongoUsernameKey: mongoUsername,
+		testcontainers.MongoPasswordKey: mongoPassword,
 		// Переопределяем хост MongoDB для подключения к контейнеру из testcontainers
 		testcontainers.MongoHostKey: generatedMongo.Config().ContainerName,
 	}
 
 	// Создаем настраиваемую стратегию ожидания с увеличенным таймаутом
-	waitStrategy := wait.ForListeningPort(nat.Port(grpcPort + "/tcp")).
-		WithStartupTimeout(startupTimeout).SkipInternalCheck()
+	// waitStrategy := wait.ForListeningPort(nat.Port(grpcPort + "/tcp")).
+	// 	WithStartupTimeout(startupTimeout).SkipInternalCheck()
+
+	waitStrategy := wait.ForExec([]string{
+		"/bin/grpc-health-probe",
+		"-addr=localhost:" + grpcPort,
+	}).
+		WithStartupTimeout(startupTimeout).
+		WithPollInterval(1 * time.Second)
 
 	appContainer, err := app.NewContainer(ctx,
 		app.WithName(inventoryAppName),
