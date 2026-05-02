@@ -84,6 +84,7 @@ func setupTestEnvironment(ctx context.Context) *TestEnvironment {
 		"LOGGER_AS_JSON":                 getEnvWithLogging(ctx, "LOGGER_AS_JSON"),
 		testcontainers.MongoImageNameKey: mongoImageName,
 		testcontainers.MongoPortKey:      getEnvWithLogging(ctx, testcontainers.MongoPortKey),
+		"EXTERNAL_MONGO_PORT":            getEnvWithLogging(ctx, "EXTERNAL_MONGO_PORT"),
 		testcontainers.MongoDatabaseKey:  mongoDatabase,
 		testcontainers.MongoAuthDBKey:    getEnvWithLogging(ctx, testcontainers.MongoAuthDBKey),
 		testcontainers.MongoUsernameKey:  mongoUsername,
