@@ -7,8 +7,6 @@ import (
 	"os"
 	"time"
 
-	"github.com/docker/go-connections/nat"
-	"github.com/testcontainers/testcontainers-go/wait"
 	"go.uber.org/zap"
 
 	"github.com/ploskirev/go-rocket/platform/pkg/logger"
@@ -82,9 +80,9 @@ func setupTestEnvironment(ctx context.Context) *TestEnvironment {
 		testcontainers.MongoHostKey: generatedMongo.Config().ContainerName,
 	}
 
-	// Создаем настраиваемую стратегию ожидания с увеличенным таймаутом
-	waitStrategy := wait.ForListeningPort(nat.Port(grpcPort + "/tcp")).
-		WithStartupTimeout(startupTimeout)
+	// // Создаем настраиваемую стратегию ожидания с увеличенным таймаутом
+	// waitStrategy := wait.ForListeningPort(nat.Port(grpcPort + "/tcp")).
+	// 	WithStartupTimeout(startupTimeout)
 
 	appContainer, err := app.NewContainer(ctx,
 		app.WithName(inventoryAppName),
@@ -93,7 +91,7 @@ func setupTestEnvironment(ctx context.Context) *TestEnvironment {
 		app.WithNetwork(generatedNetwork.Name()),
 		app.WithEnv(appEnv),
 		app.WithLogOutput(os.Stdout),
-		app.WithStartupWait(waitStrategy),
+		// app.WithStartupWait(waitStrategy),
 		app.WithLogger(logger.Logger()),
 	)
 	if err != nil {
