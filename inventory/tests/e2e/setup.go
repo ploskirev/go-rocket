@@ -7,16 +7,16 @@ import (
 	"os"
 	"time"
 
+	"github.com/docker/go-connections/nat"
+	"github.com/testcontainers/testcontainers-go/wait"
 	"go.uber.org/zap"
 
-	"github.com/docker/go-connections/nat"
 	"github.com/ploskirev/go-rocket/platform/pkg/logger"
 	"github.com/ploskirev/go-rocket/platform/pkg/testcontainers"
 	"github.com/ploskirev/go-rocket/platform/pkg/testcontainers/app"
 	"github.com/ploskirev/go-rocket/platform/pkg/testcontainers/mongo"
 	"github.com/ploskirev/go-rocket/platform/pkg/testcontainers/network"
 	"github.com/ploskirev/go-rocket/platform/pkg/testcontainers/path"
-	"github.com/testcontainers/testcontainers-go/wait"
 )
 
 const (
