@@ -43,6 +43,7 @@ vars:
 
   # MODULES: assembly inventory order payment platform iam notification
   MODULES: inventory order payment
+  # MODULES: inventory
   SERVICES: core,assembly,inventory,order,payment,iam,notification
 
 tasks:
@@ -667,3 +668,30 @@ tasks:
         # Передаем список сервисов в виде строки с разделителями-запятыми
         export SERVICES="{{.SERVICES}}"
         ENV_SUBST={{.ENVSUBST}} "$SCRIPT"
+
+  test-integration:
+    desc: "Запускает интеграционные тесты для указанных модулей"
+    summary: |
+      Запускает интеграционные тесты для модулей, указанных через переменную MODULES.
+      Использует тег "integration" для идентификации интеграционных тестов.
+    cmds:
+      - |
+        ERR=0
+        echo "🚀 Запуск интеграционных тестов (по тегу integration) для модулей: {{.MODULES}}"
+        for mod in {{.MODULES}}; do
+          if [ -d "$mod" ]; then
+            echo "🧪 Проверка модуля $mod на наличие интеграционных тестов"
+            
+            # Проверяем наличие файлов с тегом integration
+            HAS_TESTS=$(grep -r "//go:tag integration" $mod --include="*.go" | wc -l)
+            
+            if [ "$HAS_TESTS" -eq 0 ]; then
+              echo "⚠️ Модуль $mod не содержит интеграционных тестов (с тегом integration), пропускаем"
+              continue
+            fi
+            
+            echo "▶️ Запуск интеграционных тестов для $mod"
+            go test -v -tags=integration ./$mod/... || ERR=1
+          fi
+        done
+        exit $ERR
