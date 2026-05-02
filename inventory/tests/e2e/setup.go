@@ -78,6 +78,16 @@ func setupTestEnvironment(ctx context.Context) *TestEnvironment {
 	projectRoot := path.GetProjectRoot()
 
 	appEnv := map[string]string{
+		// Передаём в контейнер обязательные переменные из окружения теста
+		grpcPortKey:                      grpcPort,
+		"LOGGER_LEVEL":                   getEnvWithLogging(ctx, "LOGGER_LEVEL"),
+		"LOGGER_AS_JSON":                 getEnvWithLogging(ctx, "LOGGER_AS_JSON"),
+		testcontainers.MongoImageNameKey: mongoImageName,
+		testcontainers.MongoPortKey:      getEnvWithLogging(ctx, testcontainers.MongoPortKey),
+		testcontainers.MongoDatabaseKey:  mongoDatabase,
+		testcontainers.MongoAuthDBKey:    getEnvWithLogging(ctx, testcontainers.MongoAuthDBKey),
+		testcontainers.MongoUsernameKey:  mongoUsername,
+		testcontainers.MongoPasswordKey:  mongoPassword,
 		// Переопределяем хост MongoDB для подключения к контейнеру из testcontainers
 		testcontainers.MongoHostKey: generatedMongo.Config().ContainerName,
 	}
