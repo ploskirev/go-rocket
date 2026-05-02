@@ -7,8 +7,9 @@ import (
 	"os"
 
 	"github.com/brianvoe/gofakeit/v7"
-	inventory_v1 "github.com/ploskirev/go-rocket/shared/pkg/proto/inventory/v1"
 	"go.mongodb.org/mongo-driver/bson"
+
+	inventory_v1 "github.com/ploskirev/go-rocket/shared/pkg/proto/inventory/v1"
 )
 
 // InsertTestPart — вставляет тестовeю деталь в коллекцию Mongo и возвращает ее UUID
