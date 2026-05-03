@@ -1,4 +1,4 @@
-//go:tag integration
+//go:build integration
 
 package integration
 
@@ -58,9 +58,11 @@ var _ = BeforeSuite(func() {
 })
 
 var _ = AfterSuite(func() {
-	// logger.Info(context.Background(), "Завершение набора тестов")
-	// if env != nil {
-	// 	teardownTestEnvironment(suiteCtx, env)
-	// }
-	suiteCancel()
+	logger.Info(context.Background(), "Завершение набора тестов")
+	if env != nil {
+		teardownTestEnvironment(suiteCtx, env)
+	}
+	if suiteCancel != nil {
+		suiteCancel()
+	}
 })

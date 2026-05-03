@@ -85,8 +85,17 @@ func NewContainer(ctx context.Context, opts ...Option) (*Container, error) {
 	if err != nil {
 		return nil, errors.Errorf("failed to start app genericContainer: %v", err)
 	}
+	success := false
+	defer func() {
+		if !success {
+			dumpContainerLogs(ctx, genericContainer, cfg.LogOutput)
+			if err = genericContainer.Terminate(ctx); err != nil {
+				cfg.Logger.Error(ctx, "failed to terminate app container", zap.Error(err))
+			}
+		}
+	}()
 
-	logger.Info(ctx, fmt.Sprintf("GENERIC CONTAINER ID: %s. CFG NAME: %d", genericContainer.GetContainerID(), cfg.Name))
+	logger.Info(ctx, fmt.Sprintf("GENERIC CONTAINER ID: %s. CFG NAME: %s", genericContainer.GetContainerID(), cfg.Name))
 
 	mappedPort, err := genericContainer.MappedPort(ctx, nat.Port(cfg.Port+"/tcp"))
 	if err != nil {
@@ -103,6 +112,7 @@ func NewContainer(ctx context.Context, opts ...Option) (*Container, error) {
 	go streamContainerLogs(ctx, genericContainer, cfg.LogOutput)
 
 	cfg.Logger.Info(ctx, "App container started", zap.String("uri:", net.JoinHostPort(host, mappedPort.Port())))
+	success = true
 
 	return &Container{
 		container:    genericContainer,
@@ -135,14 +145,31 @@ func streamContainerLogs(ctx context.Context, container testcontainers.Container
 
 	go func() {
 		_, err = io.Copy(out, logs)
-		if err != nil && !errors.Is(err, io.EOF) {
+		if err != nil && !errors.Is(err, io.EOF) && !errors.Is(err, io.ErrClosedPipe) {
 			logger.Error(ctx, "error copying container logs", zap.Error(err))
 		}
 	}()
 }
 
+func dumpContainerLogs(ctx context.Context, container testcontainers.Container, out io.Writer) {
+	logs, err := container.Logs(ctx)
+	if err != nil {
+		logger.Error(ctx, "failed to get container logs", zap.Error(err))
+		return
+	}
+	defer func() {
+		if closeErr := logs.Close(); closeErr != nil {
+			logger.Error(ctx, "failed to close container logs", zap.Error(closeErr))
+		}
+	}()
+
+	if _, err = io.Copy(out, logs); err != nil && !errors.Is(err, io.EOF) {
+		logger.Error(ctx, "error copying container logs", zap.Error(err))
+	}
+}
+
 func DefaultHostConfig() func(hc *container.HostConfig) {
 	return func(hc *container.HostConfig) {
-		hc.AutoRemove = true
+		hc.AutoRemove = false
 	}
 }

@@ -1,4 +1,4 @@
-//go:tag integration
+//go:build integration
 
 package integration
 

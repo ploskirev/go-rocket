@@ -1,10 +1,11 @@
-//go:tag integration
+//go:build integration
 
 package integration
 
 import (
 	"context"
 	"os"
+	"time"
 
 	"github.com/brianvoe/gofakeit/v7"
 	"go.mongodb.org/mongo-driver/bson"
@@ -15,15 +16,20 @@ import (
 // InsertTestPart — вставляет тестовeю деталь в коллекцию Mongo и возвращает ее UUID
 func (env *TestEnvironment) InsertTestPart(ctx context.Context) (string, error) {
 	partUUID := gofakeit.UUID()
-	// now := time.Now()
+	now := time.Now()
 
 	part := bson.M{
-		"_id": partUUID,
-		"info": bson.M{
-			"name":  gofakeit.Name(),
-			"price": gofakeit.Price(1, 1000),
-		},
-		// "created_at": primitive.NewDateTimeFromTime(now),
+		"uuid":          partUUID,
+		"name":          gofakeit.Name(),
+		"price":         gofakeit.Price(1, 1000),
+		"stockquantity": int64(gofakeit.Number(1, 100)),
+		"category":      int32(inventory_v1.Category_ENGINE),
+		"dimensions":    bson.M{},
+		"manufacturer":  bson.M{},
+		"tags":          []string{},
+		"metadata":      bson.M{},
+		"createdat":     now,
+		"updatedat":     nil,
 	}
 
 	// Используем базу данных из переменной окружения MONGO_DATABASE
@@ -43,17 +49,20 @@ func (env *TestEnvironment) InsertTestPart(ctx context.Context) (string, error) 
 // InsertTestPartWithData — вставляет тестовeю деталь с заданными данными в коллекцию Mongo и возвращает ее UUID
 func (env *TestEnvironment) InsertTestPartWithData(ctx context.Context, info *inventory_v1.Part) (string, error) {
 	partUUID := gofakeit.UUID()
-	// now := time.Now()
-
-	// observedAt := info.GetObservedAt().AsTime()
+	now := time.Now()
 
 	part := bson.M{
-		"_id": partUUID,
-		"info": bson.M{
-			"name":  info.Name,
-			"price": info.Price,
-		},
-		// "created_at": primitive.NewDateTimeFromTime(now),
+		"uuid":          partUUID,
+		"name":          info.Name,
+		"price":         info.Price,
+		"stockquantity": info.StockQuantity,
+		"category":      int32(info.Category),
+		"dimensions":    bson.M{},
+		"manufacturer":  bson.M{},
+		"tags":          info.Tags,
+		"metadata":      bson.M{},
+		"createdat":     now,
+		"updatedat":     nil,
 	}
 
 	// Используем базу данных из переменной окружения MONGO_DATABASE
